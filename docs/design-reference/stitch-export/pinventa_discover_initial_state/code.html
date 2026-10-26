@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_dashboard" name="shell-type"/>
+<title>Pinventa — Discover</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+    }
+    ::-webkit-scrollbar { display: none; }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface": "#F7F5F0",
+            "surface-low": "#F1EEE7",
+            "surface-high": "#E7E4DC",
+            "surface-container": "#FFFFFF",
+            "border-subtle": "#E5E1D8",
+            "border-medium": "#D8D3C7",
+            "on-surface": "#292B27",
+            "on-surface-variant": "#63665F",
+            "on-surface-muted": "#8C8F87",
+            "primary": "#C4583C",
+            "primary-hover": "#B34A30",
+            "primary-soft": "#F9ECE8",
+            "secondary": "#3E5748",
+            "secondary-soft": "#EAF0EC"
+          },
+          fontFamily: {
+            "sans": ["Inter", "sans-serif"],
+            "mono": ["Space Mono", "monospace"]
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "md": "0.375rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem"
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-surface font-sans text-on-surface antialiased min-h-screen">
+<!-- Sidebar -->
+<aside class="fixed left-0 top-0 h-full w-[220px] bg-[#F3F0E8] border-r border-border-subtle z-50 flex flex-col justify-between select-none">
+<div class="flex flex-col">
+<!-- App Brand -->
+<div class="h-14 px-4 flex items-center justify-between border-b border-border-subtle">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded bg-primary text-white flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">explore</span>
+</div>
+<span class="font-semibold text-sm tracking-tight text-on-surface">Pinventa</span>
+</div>
+<span class="font-mono text-[11px] text-on-surface-muted">v1.4</span>
+</div>
+<!-- Navigation -->
+<div class="px-3 pt-4 pb-2">
+<span class="font-mono text-[10px] tracking-wider uppercase text-on-surface-muted font-medium">Workspace</span>
+</div>
+<nav class="flex flex-col px-2 gap-1">
+<a aria-current="page" class="flex items-center gap-2.5 px-3 py-2 rounded-md bg-surface-container text-primary font-medium text-xs border border-border-subtle/80 shadow-xs" href="#">
+<span class="material-symbols-outlined text-[17px]">explore</span>
+<span>Discover</span>
+</a>
+<a class="flex items-center gap-2.5 px-3 py-2 rounded-md text-on-surface-variant hover:bg-surface-container/60 hover:text-on-surface text-xs transition-colors" href="#">
+<span class="material-symbols-outlined text-[17px]">table_chart</span>
+<span>Leads</span>
+</a>
+<a class="flex items-center gap-2.5 px-3 py-2 rounded-md text-on-surface-variant hover:bg-surface-container/60 hover:text-on-surface text-xs transition-colors" href="#">
+<span class="material-symbols-outlined text-[17px]">drafts</span>
+<span>Outreach</span>
+</a>
+</nav>
+</div>
+<!-- User / Team Section -->
+<div class="flex flex-col border-t border-border-subtle bg-surface-low/60">
+<div class="px-4 py-3 flex items-center justify-between">
+<div class="flex items-center gap-2.5 min-w-0">
+<div class="w-6 h-6 rounded bg-surface-high flex items-center justify-center shrink-0 text-on-surface-variant font-mono text-[11px] font-medium">
+            NM
+          </div>
+<div class="flex flex-col truncate">
+<span class="text-xs font-medium text-on-surface truncate">North Market</span>
+<span class="text-[11px] text-on-surface-muted truncate">Research Team</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-[16px] text-on-surface-muted">unfold_more</span>
+</div>
+</div>
+</aside>
+<!-- Main View Area -->
+<div class="pl-[220px] flex flex-col min-h-screen">
+<!-- Top Header Navigation -->
+<header class="h-14 bg-surface border-b border-border-subtle sticky top-0 z-40 flex items-center justify-between px-8">
+<div class="flex items-center gap-2 text-xs text-on-surface-variant">
+<span>Workspace</span>
+<span class="text-on-surface-muted">/</span>
+<span class="text-on-surface font-medium">Discover businesses</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-7 h-7 rounded-full bg-surface-high border border-border-subtle flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">person</span>
+</div>
+</div>
+</header>
+<!-- Page Body -->
+<main class="flex-1 flex flex-col justify-between">
+<div>
+<!-- Hero / Search Section -->
+<div class="px-8 pt-7 pb-6">
+<div class="max-w-4xl space-y-1 mb-5">
+<h1 class="text-xl font-semibold text-on-surface tracking-tight">Discover businesses</h1>
+<p class="text-xs text-on-surface-variant leading-relaxed">
+              Define a geographic boundary and industry parameters to query OpenStreetMap data for verified commercial entities.
+            </p>
+</div>
+<!-- Main search controls console -->
+<div class="p-4 bg-surface-container rounded-lg border border-border-subtle">
+<form class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-end" id="search-parameters-form" onsubmit="event.preventDefault();">
+<!-- Location input -->
+<div class="lg:col-span-5 space-y-1.5">
+<label class="block text-[11px] font-medium uppercase tracking-wider text-on-surface-variant font-mono" for="location-query">
+                  Centerpoint Location
+                </label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-[17px] text-on-surface-muted pointer-events-none">search</span>
+<input class="w-full pl-9 pr-3 py-2 text-xs bg-surface-low/50 hover:bg-surface-low/80 focus:bg-surface-container text-on-surface rounded-md border border-border-subtle placeholder:text-on-surface-muted focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors" id="location-query" placeholder="Enter a city, address, or coordinates" type="text" value=""/>
+</div>
+</div>
+<!-- Radius Selector -->
+<div class="lg:col-span-3 space-y-1.5">
+<div class="flex items-center justify-between text-[11px] font-medium font-mono text-on-surface-variant">
+<span class="uppercase tracking-wider">Scan Radius</span>
+<span class="text-primary text-[10px]" id="selected-radius-label">3 KM</span>
+</div>
+<div aria-label="Search Radius" class="grid grid-cols-5 gap-1 p-1 bg-surface-low rounded-md border border-border-subtle" role="radiogroup">
+<button class="radius-pill py-1.5 px-1 text-center font-mono text-[11px] rounded text-on-surface-variant hover:text-on-surface transition-colors" data-radius="2" onclick="selectRadius(this, '2 KM')" type="button">2 km</button>
+<button class="radius-pill py-1.5 px-1 text-center font-mono text-[11px] rounded bg-surface-container text-primary font-medium border border-border-subtle transition-colors shadow-2xs" data-radius="3" onclick="selectRadius(this, '3 KM')" type="button">3 km</button>
+<button class="radius-pill py-1.5 px-1 text-center font-mono text-[11px] rounded text-on-surface-variant hover:text-on-surface transition-colors" data-radius="5" onclick="selectRadius(this, '5 KM')" type="button">5 km</button>
+<button class="radius-pill py-1.5 px-1 text-center font-mono text-[11px] rounded text-on-surface-variant hover:text-on-surface transition-colors" data-radius="10" onclick="selectRadius(this, '10 KM')" type="button">10 km</button>
+<button class="radius-pill py-1.5 px-1 text-center font-mono text-[11px] rounded text-on-surface-variant hover:text-on-surface transition-colors" data-radius="25" onclick="selectRadius(this, '25 KM')" type="button">25 km</button>
+</div>
+</div>
+<!-- Industry Selector -->
+<div class="lg:col-span-2 space-y-1.5">
+<label class="block text-[11px] font-medium uppercase tracking-wider text-on-surface-variant font-mono" for="industry-select">
+                  Industry Sector
+                </label>
+<div class="relative">
+<select class="w-full appearance-none pl-3 pr-8 py-2 bg-surface-low/50 hover:bg-surface-low/80 focus:bg-surface-container text-on-surface text-xs rounded-md border border-border-subtle focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors cursor-pointer" id="industry-select">
+<option disabled="" selected="" value="">Select industry category...</option>
+<option value="manufacturing">Precision Manufacturing</option>
+<option value="printing">Commercial Printing &amp; Packaging</option>
+<option value="hvac">HVAC &amp; Mechanical Systems</option>
+<option value="food">Wholesale &amp; Distribution</option>
+<option value="logistics">Freight &amp; Warehousing</option>
+<option value="electronics">Electronics &amp; Hardware</option>
+</select>
+<span class="material-symbols-outlined absolute right-2.5 top-2.5 text-[17px] text-on-surface-muted pointer-events-none">expand_more</span>
+</div>
+</div>
+<!-- Primary Action -->
+<div class="lg:col-span-2 flex items-center gap-2">
+<button class="flex-1 h-9 px-4 bg-primary hover:bg-primary-hover active:bg-[#9E3C23] text-white text-xs font-medium rounded-md flex items-center justify-center gap-1.5 transition-colors shadow-2xs" type="submit">
+<span>Search businesses</span>
+<span class="material-symbols-outlined text-[15px]">arrow_forward</span>
+</button>
+<button class="h-9 w-9 bg-surface-low hover:bg-surface-high text-on-surface-variant hover:text-on-surface rounded-md border border-border-subtle flex items-center justify-center transition-colors" onclick="resetFilters()" title="Reset parameters" type="button">
+<span class="material-symbols-outlined text-[17px]">restart_alt</span>
+</button>
+</div>
+</form>
+</div>
+</div>
+<!-- Content Area: Split Two-Pane Workspace -->
+<div class="px-8 pb-8">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-5 min-h-[520px]">
+<!-- Left: Map Panel (Clean Neutral Empty State) -->
+<div class="lg:col-span-6 bg-surface-container rounded-lg border border-border-subtle flex flex-col overflow-hidden relative">
+<!-- Panel Bar -->
+<div class="px-4 py-2.5 bg-surface-low/70 border-b border-border-subtle flex items-center justify-between text-xs text-on-surface-variant font-mono">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[15px] text-on-surface-muted">map</span>
+<span class="text-[11px] font-medium text-on-surface uppercase tracking-wide">Spatial Canvas</span>
+</div>
+<span class="text-[11px] text-on-surface-muted">No boundary set</span>
+</div>
+<!-- Cartographic Canvas Surface -->
+<div class="relative flex-1 bg-[#F5F2EA] flex items-center justify-center p-8 overflow-hidden select-none">
+<!-- Subtle Minimal Grid Pattern -->
+<svg class="absolute inset-0 w-full h-full opacity-60 pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<pattern height="48" id="neutral-grid" patternunits="userSpaceOnUse" width="48">
+<path d="M 48 0 L 0 0 0 48" fill="none" stroke="#E3DEC8" stroke-width="0.75"></path>
+</pattern>
+</defs>
+<rect fill="url(#neutral-grid)" height="100%" width="100%"></rect>
+<!-- Central Crosshair Guides -->
+<circle cx="50%" cy="50%" fill="none" r="6" stroke="#D3CBB8" stroke-width="1"></circle>
+<line stroke="#D3CBB8" stroke-width="1" x1="50%" x2="50%" y1="46%" y2="54%"></line>
+<line stroke="#D3CBB8" stroke-width="1" x1="48%" x2="52%" y1="50%" y2="50%"></line>
+</svg>
+<!-- Zoom Controls -->
+<div class="absolute top-3 right-3 flex flex-col bg-surface-container rounded border border-border-subtle shadow-2xs overflow-hidden z-10">
+<button aria-label="Zoom in" class="w-7 h-7 flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-low transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+</button>
+<div class="h-px bg-border-subtle"></div>
+<button aria-label="Zoom out" class="w-7 h-7 flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-low transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">remove</span>
+</button>
+</div>
+<!-- Clean, Tasteful Empty State Center Card -->
+<div class="relative max-w-xs p-6 bg-surface-container rounded-lg border border-border-subtle shadow-xs text-center flex flex-col items-center gap-2.5 z-10">
+<div class="w-9 h-9 rounded-full bg-surface-low flex items-center justify-center text-on-surface-muted">
+<span class="material-symbols-outlined text-[18px]">location_searching</span>
+</div>
+<div class="space-y-1">
+<h2 class="text-xs font-semibold text-on-surface">No search executed</h2>
+<p class="text-[11px] text-on-surface-variant leading-relaxed">
+                      Enter a location and radius above to render search boundary.
+                    </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Right: Results Panel (Honest Pre-search State) -->
+<div class="lg:col-span-6 bg-surface-container rounded-lg border border-border-subtle flex flex-col overflow-hidden">
+<!-- Panel Bar -->
+<div class="px-4 py-2.5 bg-surface-low/70 border-b border-border-subtle flex items-center justify-between text-xs text-on-surface-variant">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-on-surface-muted">list_alt</span>
+<span class="text-[11px] font-mono font-medium text-on-surface uppercase tracking-wide">Discovered Entities</span>
+</div>
+<span class="font-mono text-[10px] text-on-surface-muted">0 ENTITIES</span>
+</div>
+<!-- Body Pre-search Empty Content -->
+<div class="flex-1 p-8 flex flex-col items-center justify-center text-center">
+<div class="max-w-sm flex flex-col items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-low border border-border-subtle flex items-center justify-center text-on-surface-muted">
+<span class="material-symbols-outlined text-[20px]">manage_search</span>
+</div>
+<div class="space-y-1.5">
+<h3 class="text-sm font-medium text-on-surface">Awaiting search parameters</h3>
+<p class="text-xs text-on-surface-variant leading-relaxed">
+                      Discovered businesses will appear here with available details from OpenStreetMap.
+                    </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Note -->
+<footer class="px-8 py-3.5 border-t border-border-subtle bg-surface text-on-surface-muted flex items-center justify-between text-xs">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[15px] text-on-surface-muted">info</span>
+<span>Geographic discovery uses OpenStreetMap / Overpass data.</span>
+</div>
+<div class="text-[11px] font-mono text-on-surface-muted">
+          Pinventa Intelligence
+        </div>
+</footer>
+</main>
+</div>
+<script>
+    function selectRadius(button, label) {
+      document.querySelectorAll('.radius-pill').forEach(btn => {
+        btn.classList.remove('bg-surface-container', 'text-primary', 'font-medium', 'border', 'border-border-subtle', 'shadow-2xs');
+        btn.classList.add('text-on-surface-variant');
+      });
+      button.classList.add('bg-surface-container', 'text-primary', 'font-medium', 'border', 'border-border-subtle', 'shadow-2xs');
+      button.classList.remove('text-on-surface-variant');
+      document.getElementById('selected-radius-label').textContent = label;
+    }
+
+    function resetFilters() {
+      document.getElementById('location-query').value = '';
+      document.getElementById('industry-select').selectedIndex = 0;
+      const defaultBtn = document.querySelector('.radius-pill[data-radius="3"]');
+      if (defaultBtn) {
+        selectRadius(defaultBtn, '3 KM');
+      }
+    }
+  </script>
+</body></html>

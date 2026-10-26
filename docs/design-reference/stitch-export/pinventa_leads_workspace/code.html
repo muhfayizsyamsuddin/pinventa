@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-primary": "#ffffff", "on-primary-container": "#fffbff", "secondary-fixed": "#c4ecd4", "background": "#F7F5F0", "outline": "#8a726c", "on-tertiary": "#ffffff", "inverse-surface": "#2f312d", "tertiary-fixed-dim": "#ffb870", "on-secondary-fixed-variant": "#2b4e3d", "surface-container-lowest": "#ffffff", "surface": "#F7F5F0", "on-error": "#ffffff", "on-error-container": "#93000a", "on-secondary": "#ffffff", "on-primary-fixed-variant": "#822810", "surface-container-highest": "#e3e3dd", "surface-dim": "#dadad4", "secondary-container": "#c4ecd4", "secondary": "#436653", "on-tertiary-fixed": "#2c1600", "primary-fixed": "#ffdbd2", "surface-container-high": "#e8e9e2", "surface-container": "#eeeee8", "on-secondary-container": "#486c59", "error": "#ba1a1a", "on-primary-fixed": "#3c0800", "primary-fixed-dim": "#ffb4a2", "outline-variant": "#ddc0b9", "inverse-on-surface": "#f1f1eb", "on-surface-variant": "#57423d", "on-tertiary-fixed-variant": "#693c00", "tertiary-container": "#a4661d", "on-surface": "#1a1c18", "secondary-fixed-dim": "#a9cfb9", "primary-container": "#be5438", "inverse-primary": "#ffb4a2", "tertiary": "#874e00", "primary": "#C4583C", "surface-tint": "#C4583C", "tertiary-fixed": "#ffdcbe", "on-background": "#1a1c18", "on-tertiary-container": "#fffbff", "on-secondary-fixed": "#002114", "surface-variant": "#e3e3dd", "surface-bright": "#F7F5F0", "surface-container-low": "#f4f4ed", "error-container": "#ffdad6" }, "borderRadius": { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }, "spacing": { "space-2xl": "2rem", "gutter": "1rem", "space-xl": "1.5rem", "gutter-compact": "0.5rem", "margin": "1.5rem", "space-lg": "1rem", "space-md": "0.75rem", "margin-panel": "1rem", "space-xs": "0.25rem", "space-sm": "0.5rem" }, "fontFamily": { "body-md": [ "Inter" ], "mono-data": [ "Space Mono" ], "headline-md": [ "Inter" ], "label-caps": [ "Inter" ], "headline-lg": [ "Inter" ], "body-lg": [ "Inter" ], "label-sm": [ "Inter" ], "label-md": [ "Inter" ], "body-sm": [ "Inter" ], "headline-xl": [ "Inter" ], "headline-sm": [ "Inter" ] }, "fontSize": { "body-md": [ "13px", { "lineHeight": "18px", "fontWeight": "400" } ], "mono-data": [ "12px", { "lineHeight": "16px", "fontWeight": "400" } ], "headline-md": [ "16px", { "lineHeight": "24px", "letterSpacing": "-0.005em", "fontWeight": "600" } ], "label-caps": [ "11px", { "lineHeight": "14px", "letterSpacing": "0.06em", "fontWeight": "600" } ], "headline-lg": [ "20px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "500" } ], "body-lg": [ "15px", { "lineHeight": "22px", "fontWeight": "400" } ], "label-sm": [ "10px", { "lineHeight": "12px", "letterSpacing": "0.02em", "fontWeight": "500" } ], "label-md": [ "12px", { "lineHeight": "16px", "fontWeight": "500" } ], "body-sm": [ "12px", { "lineHeight": "16px", "fontWeight": "400" } ], "headline-xl": [ "24px", { "lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "500" } ], "headline-sm": [ "14px", { "lineHeight": "20px", "fontWeight": "600" } ] } } } };</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-[220px] bg-surface-container-low border-r border-surface-container-highest z-50 flex flex-col justify-between select-none"><div class="flex flex-col"><div class="h-14 px-margin-panel flex items-center justify-between border-b border-surface-container-highest"><div class="flex items-center gap-space-sm"><div class="w-6 h-6 rounded flex items-center justify-center bg-primary text-on-primary"><span class="material-symbols-outlined text-[16px]">explore</span></div><span class="font-headline-sm text-headline-sm tracking-tight text-on-surface">Pinventa</span></div><span class="font-mono-data text-mono-data text-on-surface-variant">v1.4</span></div><div class="px-space-md pt-space-md pb-space-xs"><span class="font-label-caps text-label-caps uppercase text-on-surface-variant">Domains</span></div><nav class="flex flex-col px-space-xs gap-space-xs" data-active-classes="bg-surface-container-lowest text-primary font-headline-sm border-l-2 border-primary"><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="discover" href="#"><span class="material-symbols-outlined text-[18px]">my_location</span><span class="font-body-md text-body-md">Discover</span></a><a aria-current="page" class="flex items-center gap-space-sm px-space-md py-space-sm rounded transition-colors bg-surface-container-lowest text-primary font-headline-sm border-l-2 border-primary" data-path="leads" href="#"><span class="material-symbols-outlined text-[18px]">table_chart</span><span class="font-body-md text-body-md">Leads</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="outreach" href="#"><span class="material-symbols-outlined text-[18px]">drafts</span><span class="font-body-md text-body-md">Outreach</span></a></nav></div><div class="flex flex-col border-t border-surface-container-highest bg-surface-container-low"><div class="p-space-md border-b border-surface-container-highest"><div class="flex items-start gap-space-xs"><span class="material-symbols-outlined text-[14px] text-on-surface-variant mt-0.5">database</span><div class="flex flex-col"><span class="font-label-sm text-label-sm uppercase text-on-surface-variant">Engine Provenance</span><span class="font-mono-data text-mono-data text-on-surface">OSM / Overpass API</span></div></div></div><div class="p-space-md flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0"><div class="w-7 h-7 rounded bg-secondary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-secondary text-[16px]">corporate_fare</span></div><div class="flex flex-col truncate"><span class="font-label-md text-label-md text-on-surface truncate">Research Team</span><span class="font-label-sm text-label-sm text-on-surface-variant truncate">Demonstration Mode</span></div></div><span class="material-symbols-outlined text-[18px] text-on-surface-variant shrink-0">unfold_more</span></div></div></aside><div class="pl-[220px]"><header class="fixed top-0 left-[220px] right-0 h-14 bg-surface border-b border-surface-container-highest z-40 flex items-center justify-between px-space-xl"><div class="flex items-center gap-space-md"><span class="font-label-caps text-label-caps uppercase text-on-surface-variant">Target Region</span><span class="text-outline-variant font-mono-data">/</span><span class="font-body-md text-on-surface font-medium">Raffles Place, Singapore</span><span class="text-outline-variant font-mono-data">•</span><span class="font-mono-data text-mono-data text-on-surface-variant">3 km radius</span></div><div class="flex items-center gap-space-md"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><main class="relative pt-14 w-full min-h-screen bg-surface"><div class="flex flex-col w-full">
+<div class="px-space-xl py-space-xl flex flex-col gap-space-lg">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-sm text-on-surface-variant">
+<span class="font-mono-data text-mono-data uppercase">Workspace</span>
+<span class="font-mono-data text-mono-data">/</span>
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-primary">Territory Cadastre</span>
+</div>
+<h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tight">Leads</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+          Collected prospects under research and qualification review for Raffles Place, Singapore (3 km radius).
+        </p>
+</div>
+<!-- Prominent Note -->
+<div class="flex items-center gap-space-sm bg-surface-container-low px-space-md py-space-sm rounded-lg border border-surface-container-highest shadow-sm max-w-md">
+<span class="material-symbols-outlined text-[18px] text-primary shrink-0">info</span>
+<div class="flex flex-col">
+<span class="font-label-caps text-[10px] uppercase text-primary font-bold">Demonstration Note</span>
+<span class="font-body-sm text-body-sm text-on-surface">Illustrative preview — not live database records (3 preview records displayed).</span>
+</div>
+</div>
+</div>
+<!-- Summary Metric Bar -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-space-md">
+<div class="bg-surface-container-lowest p-space-md rounded-lg border border-surface-container-highest shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="font-label-caps text-label-caps uppercase">Total Sample</span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">database</span>
+</div>
+<div class="flex items-baseline gap-space-xs mt-space-sm">
+<span class="font-headline-lg text-headline-lg text-on-surface">3</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">records (illustrative)</span>
+</div>
+<div class="w-full bg-surface-container-high h-1 rounded-full mt-space-sm overflow-hidden">
+<div class="bg-outline h-full w-full"></div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-lg border border-surface-container-highest shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="font-label-caps text-label-caps uppercase">Qualified</span>
+<span class="material-symbols-outlined text-[16px] text-secondary">verified</span>
+</div>
+<div class="flex items-baseline gap-space-xs mt-space-sm">
+<span class="font-headline-lg text-headline-lg text-on-surface">1</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">/ 3 illustrative</span>
+</div>
+<div class="w-full bg-surface-container-high h-1 rounded-full mt-space-sm overflow-hidden">
+<div class="bg-secondary h-full w-1/3"></div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-lg border border-surface-container-highest shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="font-label-caps text-label-caps uppercase">Researching</span>
+<span class="material-symbols-outlined text-[16px] text-tertiary">hourglass_empty</span>
+</div>
+<div class="flex items-baseline gap-space-xs mt-space-sm">
+<span class="font-headline-lg text-headline-lg text-on-surface">1</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">/ 3 illustrative</span>
+</div>
+<div class="w-full bg-surface-container-high h-1 rounded-full mt-space-sm overflow-hidden">
+<div class="bg-tertiary h-full w-1/3"></div>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-lg border border-surface-container-highest shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="font-label-caps text-label-caps uppercase">Needs Verification</span>
+<span class="material-symbols-outlined text-[16px] text-outline">help_outline</span>
+</div>
+<div class="flex items-baseline gap-space-xs mt-space-sm">
+<span class="font-headline-lg text-headline-lg text-on-surface">1</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">/ 3 illustrative</span>
+</div>
+<div class="w-full bg-surface-container-high h-1 rounded-full mt-space-sm overflow-hidden">
+<div class="bg-outline h-full w-1/3"></div>
+</div>
+</div>
+</div>
+<!-- Search & Filter Controls Rig -->
+<div class="bg-surface-container-lowest p-space-md rounded-lg border border-surface-container-highest shadow-sm flex flex-col gap-space-md">
+<!-- Top action row -->
+<div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-space-md">
+<!-- Search Field -->
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-space-md top-1/2 -translate-y-1/2 text-[18px] text-on-surface-variant">search</span>
+<input class="w-full pl-10 pr-space-md py-space-sm bg-surface-container-low text-on-surface placeholder:text-on-surface-variant font-body-md text-body-md rounded border border-surface-container-highest focus:outline-none focus:bg-surface-container-lowest focus:border-primary transition-colors" placeholder="Filter saved leads by name, category, or tag..." type="text"/>
+</div>
+<!-- Utility Buttons -->
+<div class="flex items-center gap-space-sm shrink-0">
+<button class="flex items-center gap-space-xs px-space-md py-space-sm rounded bg-[#C4583C] text-on-primary hover:bg-[#a8442b] transition-colors shadow-sm font-headline-sm text-headline-sm">
+<span class="material-symbols-outlined text-[16px]">download</span>
+<span>Export CSV (3 records)</span>
+</button>
+</div>
+</div>
+<!-- Filter Controls Strip -->
+<div class="flex flex-wrap items-center gap-space-sm pt-space-xs border-t border-surface-container-highest">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant mr-space-xs">Filters</span>
+<!-- Industry Filter Dropdown -->
+<div class="relative group">
+<button class="flex items-center gap-space-xs px-space-sm py-1 bg-surface-container text-on-surface rounded font-label-md text-label-md border border-surface-container-highest hover:bg-surface-container-high transition-colors">
+<span class="text-on-surface-variant">Industry:</span>
+<span class="font-medium">Business and professional services</span>
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant">expand_more</span>
+</button>
+</div>
+<!-- Status Filter Dropdown -->
+<div class="relative group">
+<button class="flex items-center gap-space-xs px-space-sm py-1 bg-surface-container text-on-surface rounded font-label-md text-label-md border border-surface-container-highest hover:bg-surface-container-high transition-colors">
+<span class="text-on-surface-variant">Status:</span>
+<span class="font-medium">All</span>
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant">expand_more</span>
+</button>
+</div>
+<!-- Score Filter Dropdown -->
+<div class="relative group">
+<button class="flex items-center gap-space-xs px-space-sm py-1 bg-surface-container text-on-surface rounded font-label-md text-label-md border border-surface-container-highest hover:bg-surface-container-high transition-colors">
+<span class="text-on-surface-variant">Score:</span>
+<span class="font-medium">All</span>
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant">expand_more</span>
+</button>
+</div>
+<div class="flex items-center gap-space-xs ml-auto">
+<span class="font-mono-data text-label-sm text-on-surface-variant">Showing 3 of 3 preview records</span>
+</div>
+</div>
+</div>
+<!-- Main Leads Table -->
+<div class="bg-surface-container-lowest rounded-lg border border-surface-container-highest shadow-sm overflow-hidden flex flex-col">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant font-label-caps text-label-caps uppercase select-none border-b border-surface-container-highest">
+<th class="py-space-md px-space-md w-10">
+<input class="rounded accent-primary w-3.5 h-3.5" type="checkbox"/>
+</th>
+<th class="py-space-md px-space-md">Lead / Business Name</th>
+<th class="py-space-md px-space-md">Category</th>
+<th class="py-space-md px-space-md">Location &amp; Proximity</th>
+<th class="py-space-md px-space-md">Digital Presence</th>
+<th class="py-space-md px-space-md text-right">Qualification Score</th>
+<th class="py-space-md px-space-md text-center">Status</th>
+<th class="py-space-md px-space-md text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container-highest text-on-surface font-body-md text-body-md">
+<!-- Row 1: Example Business A -->
+<tr class="hover:bg-surface-container-low transition-colors group bg-surface-container-low/40">
+<td class="py-space-md px-space-md align-top">
+<input checked="" class="rounded accent-primary w-3.5 h-3.5 mt-1" type="checkbox"/>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-col gap-0.5">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">Example Business A</span>
+<span class="material-symbols-outlined text-[14px] text-secondary" title="Verified Anchor">verified</span>
+</div>
+<div class="flex items-center gap-space-xs text-on-surface-variant font-mono-data text-mono-data">
+<span>DEMO-SG#001</span>
+<span>•</span>
+<span>Corporate Services</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-col">
+<span class="text-on-surface font-medium">Management Consulting &amp; Advisory</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Strategic Advisory</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-col">
+<span class="text-on-surface font-body-md text-body-md">Raffles Place</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">0.4 km from target anchor</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-space-xs text-secondary">
+<span class="material-symbols-outlined text-[14px]">language</span>
+<span class="font-label-sm text-label-sm">Website available</span>
+</div>
+<div class="flex items-center gap-space-xs text-secondary">
+<span class="material-symbols-outlined text-[14px]">call</span>
+<span class="font-label-sm text-label-sm">Phone available</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top text-right">
+<div class="flex flex-col items-end gap-1">
+<div class="flex items-center gap-space-xs">
+<span class="font-mono-data text-headline-sm text-secondary font-bold">78</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">/ 100</span>
+</div>
+<div class="w-24 bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+<div class="bg-secondary h-full w-[78%]"></div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">(Illustrative)</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top text-center">
+<span class="inline-flex items-center px-space-sm py-0.5 rounded-full font-label-caps text-label-caps bg-secondary-container text-on-secondary-container border border-secondary/20">
+                  Qualified
+                </span>
+</td>
+<td class="py-space-md px-space-md align-top text-right">
+<div class="flex items-center justify-end gap-space-xs">
+<button class="px-space-sm py-1 font-label-md text-label-md rounded text-primary hover:bg-surface-container transition-colors border border-transparent hover:border-surface-container-highest">
+                    Inspect
+                  </button>
+<button class="flex items-center gap-1 px-space-sm py-1 bg-surface-container hover:bg-surface-container-high rounded text-on-surface font-label-md text-label-md transition-colors border border-surface-container-highest">
+<span class="material-symbols-outlined text-[14px] text-primary">send</span>
+<span>Outreach</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2: Example Business B -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-space-md px-space-md align-top">
+<input class="rounded accent-primary w-3.5 h-3.5 mt-1" type="checkbox"/>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-col gap-0.5">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">Example Business B</span>
+</div>
+<div class="flex items-center gap-space-xs text-on-surface-variant font-mono-data text-mono-data">
+<span>DEMO-SG#002</span>
+<span>•</span>
+<span>Legal Services</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-col">
+<span class="text-on-surface font-medium">Corporate Legal &amp; Compliance Services</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Regulatory &amp; Filing</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-col">
+<span class="text-on-surface font-body-md text-body-md">Shenton Way</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">1.1 km from target anchor</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-space-xs text-secondary">
+<span class="material-symbols-outlined text-[14px]">language</span>
+<span class="font-label-sm text-label-sm">Website only</span>
+</div>
+<div class="flex items-center gap-space-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px] text-outline">phone_disabled</span>
+<span class="font-label-sm text-label-sm text-outline">Phone missing</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top text-right">
+<div class="flex flex-col items-end gap-1">
+<div class="flex items-center gap-space-xs">
+<span class="font-mono-data text-headline-sm text-tertiary font-bold">62</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">/ 100</span>
+</div>
+<div class="w-24 bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+<div class="bg-tertiary h-full w-[62%]"></div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">(Illustrative)</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top text-center">
+<span class="inline-flex items-center px-space-sm py-0.5 rounded-full font-label-caps text-label-caps bg-tertiary-fixed text-on-tertiary-fixed-variant border border-tertiary/20">
+                  Researching
+                </span>
+</td>
+<td class="py-space-md px-space-md align-top text-right">
+<div class="flex items-center justify-end gap-space-xs">
+<button class="px-space-sm py-1 font-label-md text-label-md rounded text-primary hover:bg-surface-container transition-colors border border-transparent hover:border-surface-container-highest">
+                    Inspect
+                  </button>
+<button class="flex items-center gap-1 px-space-sm py-1 bg-surface-container hover:bg-surface-container-high rounded text-on-surface font-label-md text-label-md transition-colors border border-surface-container-highest">
+<span class="material-symbols-outlined text-[14px] text-primary">send</span>
+<span>Outreach</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3: Example Business C -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-space-md px-space-md align-top">
+<input class="rounded accent-primary w-3.5 h-3.5 mt-1" type="checkbox"/>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-col gap-0.5">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-sm text-headline-sm text-on-surface group-hover:text-primary transition-colors">Example Business C</span>
+</div>
+<div class="flex items-center gap-space-xs text-on-surface-variant font-mono-data text-mono-data">
+<span>DEMO-SG#003</span>
+<span>•</span>
+<span>Staffing &amp; HR</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-col">
+<span class="text-on-surface font-medium">Executive Search &amp; Staffing</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Recruitment Services</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-col">
+<span class="text-on-surface font-body-md text-body-md">Tanjong Pagar</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">2.2 km from target anchor</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-space-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[14px] text-outline">link_off</span>
+<span class="font-label-sm text-label-sm text-outline">Website missing</span>
+</div>
+<div class="flex items-center gap-space-xs text-secondary">
+<span class="material-symbols-outlined text-[14px]">call</span>
+<span class="font-label-sm text-label-sm">Phone only</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top text-right">
+<div class="flex flex-col items-end gap-1">
+<div class="flex items-center gap-space-xs">
+<span class="font-mono-data text-headline-sm text-on-surface-variant font-bold">54</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">/ 100</span>
+</div>
+<div class="w-24 bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+<div class="bg-outline h-full w-[54%]"></div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">(Illustrative)</span>
+</div>
+</td>
+<td class="py-space-md px-space-md align-top text-center">
+<span class="inline-flex items-center px-space-sm py-0.5 rounded-full font-label-caps text-label-caps bg-surface-container-high text-on-surface-variant border border-surface-container-highest">
+                  Needs Verification
+                </span>
+</td>
+<td class="py-space-md px-space-md align-top text-right">
+<div class="flex items-center justify-end gap-space-xs">
+<button class="px-space-sm py-1 font-label-md text-label-md rounded text-primary hover:bg-surface-container transition-colors border border-transparent hover:border-surface-container-highest">
+                    Inspect
+                  </button>
+<button class="flex items-center gap-1 px-space-sm py-1 bg-surface-container hover:bg-surface-container-high rounded text-on-surface font-label-md text-label-md transition-colors border border-surface-container-highest">
+<span class="material-symbols-outlined text-[14px] text-primary">send</span>
+<span>Outreach</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination & Selection Bar -->
+<div class="p-space-md bg-surface-container-low flex items-center justify-between border-t border-surface-container-highest">
+<div class="flex items-center gap-space-sm">
+<span class="font-mono-data text-mono-data text-on-surface-variant">Showing 1–3 of 3 demonstration records</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">|</span>
+<span class="font-label-sm text-label-sm text-on-surface">1 record selected for preview</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="px-space-sm py-1 font-mono-data text-mono-data text-on-surface font-bold bg-surface-container-lowest rounded border border-surface-container-highest shadow-sm">Page 1 of 1</span>
+</div>
+</div>
+</div>
+<!-- Selected Record Inspector Card (Clean & Honest Preview) -->
+<div class="bg-surface-container-lowest p-space-md rounded-lg border border-surface-container-highest shadow-sm flex flex-col gap-space-md">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between pb-space-xs border-b border-surface-container-highest gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded bg-primary-fixed flex items-center justify-center text-on-primary-fixed shrink-0">
+<span class="material-symbols-outlined text-[18px]">business</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface">Example Business A</span>
+<span class="font-mono-data text-label-sm text-on-surface-variant">Selected for demonstration</span>
+</div>
+</div>
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant">Illustrative Fit Score:</span>
+<span class="font-mono-data text-mono-data text-secondary font-bold">78 / 100</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<div class="bg-surface-container-low p-space-sm rounded border border-surface-container-highest flex flex-col gap-1">
+<span class="font-label-caps text-[10px] uppercase text-on-surface-variant block">Category Description</span>
+<span class="font-body-md text-body-md text-on-surface">Management Consulting &amp; Advisory Services</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Location: Raffles Place (0.4 km)</span>
+</div>
+<div class="bg-surface-container-low p-space-sm rounded border border-surface-container-highest flex flex-col gap-1">
+<span class="font-label-caps text-[10px] uppercase text-on-surface-variant block">Digital Verification Status</span>
+<span class="font-body-md text-body-md text-on-surface">Website confirmed, Direct phone confirmed</span>
+<span class="font-label-sm text-label-sm text-secondary font-medium">Status: Qualified lead</span>
+</div>
+<div class="bg-surface-container-low p-space-sm rounded border border-surface-container-highest flex flex-col gap-1">
+<span class="font-label-caps text-[10px] uppercase text-on-surface-variant block">Demonstration Metadata</span>
+<span class="font-body-md text-body-md text-on-surface">Territory evaluation sample</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Raffles Place cluster scenario</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-space-xs">
+<div class="flex items-center gap-space-xs text-on-surface-variant font-mono-data text-mono-data">
+<span class="material-symbols-outlined text-[14px]">info</span>
+<span>Illustrative demonstration record — does not reflect external enterprise telemetry</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<a class="font-headline-sm text-headline-sm text-primary hover:underline flex items-center gap-1" href="#">
+<span>Open Lead Detail</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Persistent Footer -->
+<div class="p-space-md bg-surface-container-low rounded-lg border border-surface-container-highest shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">info</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+          Illustrative preview data for demonstration purposes. Displays 3 curated records under review.
+        </p>
+</div>
+<div class="flex items-center gap-space-md text-on-surface-variant font-mono-data text-mono-data shrink-0">
+<span>Pinventa Leads Workspace</span>
+<span>•</span>
+<span>Evaluation Mode</span>
+</div>
+</div>
+</div>
+</div></main></div></body></html>
