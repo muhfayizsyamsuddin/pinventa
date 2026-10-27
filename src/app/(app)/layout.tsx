@@ -12,8 +12,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         <TopBar />
         <main className="flex flex-1 flex-col">{children}</main>
         <footer className="border-t border-line px-6 py-3 text-[11px] text-ink-3">
-          Pinventa · internal prototype · map data credit applies once OpenStreetMap
-          is connected (© OpenStreetMap contributors).
+          Pinventa · internal prototype · map data © OpenStreetMap contributors.
         </footer>
       </div>
     </>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useId, useState, type FormEvent } from "react";
+import { useId, useState, useTransition, type FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { DEFAULT_RADIUS, INDUSTRIES, RADII } from "@/lib/config";
@@ -29,6 +29,7 @@ export function SearchControls({ initial, onSubmit }: SearchControlsProps) {
   const [radius, setRadius] = useState<RadiusKm>(initial?.radiusKm ?? DEFAULT_RADIUS);
   const [industry, setIndustry] = useState(initial?.industryId ?? "");
   const [errors, setErrors] = useState<FieldErrors>({});
+  const [pending, startTransition] = useTransition();
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -48,7 +49,7 @@ export function SearchControls({ initial, onSubmit }: SearchControlsProps) {
       radius: String(query.radiusKm),
       industry: query.industryId,
     });
-    router.push(`/discover/results?${params.toString()}`);
+    startTransition(() => router.push(`/discover/results?${params.toString()}`));
   }
 
   function handleReset() {
@@ -161,9 +162,18 @@ export function SearchControls({ initial, onSubmit }: SearchControlsProps) {
       </div>
 
       <div className="flex items-end gap-2 pt-0 lg:col-span-2 lg:pt-[23px]">
-        <Button type="submit" variant="primary" className="h-9 flex-1">
-          Search
-          <Icon name="arrow-right" size={14} />
+        <Button type="submit" variant="primary" className="h-9 flex-1" disabled={pending} aria-busy={pending}>
+          {pending ? (
+            <>
+              <Icon name="loader" size={14} className="animate-spin" />
+              Searching…
+            </>
+          ) : (
+            <>
+              Search
+              <Icon name="arrow-right" size={14} />
+            </>
+          )}
         </Button>
         <Button
           variant="secondary"

@@ -30,9 +30,12 @@ export function EmptyResults({ editHref }: { editHref: string }) {
 export function ErrorResults({
   editHref,
   onRetry,
+  message,
 }: {
   editHref: string;
   onRetry?: () => void;
+  /** Specific, user-safe reason from the API (no internal diagnostics). */
+  message?: string;
 }) {
   return (
     <StateMessage
@@ -51,8 +54,8 @@ export function ErrorResults({
         </div>
       }
     >
-      The data source did not respond as expected. No results have been
-      recorded. Check your parameters and try again.
+      {message ?? "The data source did not respond as expected. Check your parameters and try again."}{" "}
+      No results have been recorded.
     </StateMessage>
   );
 }

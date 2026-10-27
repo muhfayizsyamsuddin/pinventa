@@ -2,27 +2,63 @@ import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { DemoBadge, ProvenanceBadge } from "@/components/ui/StatusBadge";
 import { Icon } from "@/components/ui/Icon";
-import type { BusinessResult, FieldAvailability } from "@/types/pinventa";
+import type { BusinessResult, DataCompleteness, FieldAvailability } from "@/types/pinventa";
 
 function Availability({
   label,
   icon,
   value,
+  detail,
+  href,
 }: {
   label: string;
-  icon: "globe" | "phone";
+  icon: "globe" | "phone" | "mail";
   value: FieldAvailability;
+  /** Exact value from the source record (live data). */
+  detail?: string;
+  href?: string;
 }) {
   const listed = value === "listed";
   return (
     <div className="flex min-w-0 items-center gap-2">
-      <Icon name={listed ? icon : "dash-circle"} size={15} className={listed ? "text-sage" : "text-ink-3"} />
+      <Icon name={listed ? icon : "dash-circle"} size={15} className={listed ? "shrink-0 text-sage" : "shrink-0 text-ink-3"} />
       <span className="label-caps">{label}</span>
-      <span className={listed ? "text-[12px] text-ink" : "text-[12px] italic text-ink-3"}>
-        {listed ? "Listed in record" : "Not listed in source"}
-      </span>
+      {listed && detail && href ? (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="min-w-0 truncate text-[12px] text-primary-press underline-offset-2 hover:underline"
+        >
+          {detail}
+        </a>
+      ) : (
+        <span
+          className={
+            listed
+              ? "min-w-0 truncate text-[12px] text-ink"
+              : "text-[12px] italic text-ink-3"
+          }
+        >
+          {listed ? (detail ?? "Listed in record") : "Not listed in source"}
+        </span>
+      )}
     </div>
   );
+}
+
+const COMPLETENESS_LABEL: Record<DataCompleteness, string> = {
+  good: "Address + contact listed",
+  partial: "Partial details",
+  minimal: "Name and location only",
+};
+
+function hostOf(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url;
+  }
 }
 
 interface BusinessResultRowProps {
@@ -43,6 +79,8 @@ export function BusinessResultRow({
   onHover,
   onToggleSave,
 }: BusinessResultRowProps) {
+  const live = business.dataOrigin === "live";
+  const hasDistance = Number.isFinite(business.distanceKm);
   return (
     <article
       id={`business-${business.id}`}
@@ -58,26 +96,66 @@ export function BusinessResultRow({
             {index + 1}
           </span>
           <div className="min-w-0">
-            <h3 className="flex items-center gap-2 text-[14px] font-semibold tracking-tight">
+            <h3 className="flex flex-wrap items-center gap-2 text-[14px] font-semibold tracking-tight">
               {business.name}
               {business.dataOrigin === "demo" && <DemoBadge />}
             </h3>
             <p className="mt-0.5 text-[12px] text-ink-2">{business.category}</p>
+            {live && (
+              <p className={business.address ? "mt-0.5 text-[12px] text-ink-2" : "mt-0.5 text-[12px] italic text-ink-3"}>
+                {business.address ?? "Address not listed in source"}
+              </p>
+            )}
           </div>
         </div>
-        <span className="flex shrink-0 items-center gap-1 rounded bg-sunken px-2 py-0.5 font-mono text-[12px]">
-          <Icon name="map-pin" size={13} className="text-primary" />
-          {business.distanceKm.toFixed(1)} km from center
-        </span>
+        {hasDistance && (
+          <span className="flex shrink-0 items-center gap-1 rounded bg-sunken px-2 py-0.5 font-mono text-[12px]">
+            <Icon name="map-pin" size={13} className="text-primary" />
+            {business.distanceKm.toFixed(1)} km from center
+          </span>
+        )}
       </div>
 
       <div className="grid grid-cols-1 gap-2 rounded bg-sunken/70 p-2.5 sm:grid-cols-2">
-        <Availability label="Website" icon="globe" value={business.website} />
-        <Availability label="Phone" icon="phone" value={business.phone} />
+        <Availability
+          label="Website"
+          icon="globe"
+          value={business.website}
+          detail={business.websiteUrl ? hostOf(business.websiteUrl) : undefined}
+          href={business.websiteUrl}
+        />
+        <Availability label="Phone" icon="phone" value={business.phone} detail={business.phoneNumber} />
+        {live && (
+          <Availability
+            label="Email"
+            icon="mail"
+            value={business.email ? "listed" : "not_listed"}
+            detail={business.email}
+          />
+        )}
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-2.5">
-        <ProvenanceBadge label={business.sourceLabel} />
+        <div className="flex flex-wrap items-center gap-1.5">
+          {business.osmUrl ? (
+            <a
+              href={business.osmUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`View ${business.name} on OpenStreetMap (opens in a new tab)`}
+              className="hover:opacity-80"
+            >
+              <ProvenanceBadge label={`${business.sourceLabel} ↗`} />
+            </a>
+          ) : (
+            <ProvenanceBadge label={business.sourceLabel} />
+          )}
+          {business.completeness && (
+            <span title="How much of the expected detail the OpenStreetMap record lists. Not a verification of the business.">
+              <ProvenanceBadge label={COMPLETENESS_LABEL[business.completeness]} />
+            </span>
+          )}
+        </div>
         <div className="flex items-center gap-2">
           <Button
             variant={saved ? "primary" : "secondary"}
@@ -88,13 +166,15 @@ export function BusinessResultRow({
             <Icon name={saved ? "check" : "bookmark"} size={13} />
             {saved ? "Saved" : "Save lead"}
           </Button>
-          <Link
-            href={`/leads/${business.leadId}`}
-            className="inline-flex h-7 items-center gap-1 rounded border border-line bg-card px-2.5 text-[12px] font-semibold text-ink hover:border-primary hover:bg-stone"
-          >
-            Inspect details
-            <Icon name="chevron-right" size={13} />
-          </Link>
+          {business.leadId && (
+            <Link
+              href={`/leads/${business.leadId}`}
+              className="inline-flex h-7 items-center gap-1 rounded border border-line bg-card px-2.5 text-[12px] font-semibold text-ink hover:border-primary hover:bg-stone"
+            >
+              Inspect details
+              <Icon name="chevron-right" size={13} />
+            </Link>
+          )}
         </div>
       </div>
     </article>

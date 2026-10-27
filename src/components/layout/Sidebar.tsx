@@ -37,9 +37,8 @@ export function Sidebar() {
   return (
     <aside className="fixed inset-y-0 left-0 z-50 hidden w-[220px] flex-col justify-between border-r border-line bg-rail lg:flex">
       <div>
-        <div className="flex h-14 items-center justify-between border-b border-line px-4">
+        <div className="flex h-14 items-center border-b border-line px-4">
           <Brand />
-          <span className="font-mono text-[10px] text-ink-3">UI preview</span>
         </div>
         <p className="label-caps px-5 pb-1 pt-4">Workspace</p>
         <nav aria-label="Primary" className="flex flex-col gap-1 px-2">
@@ -65,10 +64,10 @@ export function Sidebar() {
       </div>
       <div className="border-t border-line">
         <div className="space-y-0.5 border-b border-line px-4 py-3">
-          <p className="label-caps">Planned data source</p>
+          <p className="label-caps">Live data source</p>
           <p className="font-mono text-[11px] text-ink-2">OpenStreetMap / Overpass</p>
-          <p className="text-[10px] leading-[14px] text-ink-3">
-            Not connected in this milestone.
+          <p className="text-[10px] leading-[14px] text-sage">
+            Connected and active.
           </p>
         </div>
         <div className="flex items-center gap-2.5 px-4 py-3">

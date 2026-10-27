@@ -46,8 +46,8 @@ export function TopBar() {
       </nav>
       <div className="flex items-center gap-3">
         <span className="hidden items-center gap-1.5 rounded-sm border border-line bg-card px-2 py-1 font-mono text-[10px] text-ink-2 sm:inline-flex">
-          <Icon name="info" size={12} className="text-amber" />
-          UI preview · no backend connected
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-sage" />
+          Backend connected · OpenStreetMap
         </span>
         <div
           className="flex h-7 w-7 items-center justify-center rounded-full border border-line bg-strong text-ink-2"

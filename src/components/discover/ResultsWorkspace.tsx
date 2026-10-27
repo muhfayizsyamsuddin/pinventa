@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { BusinessResultRow } from "@/components/discover/BusinessResultRow";
+import { LiveMap } from "@/components/discover/LiveMap";
 import { MapCanvas } from "@/components/discover/MapCanvas";
 import {
   EmptyResults,
@@ -11,23 +12,41 @@ import {
 } from "@/components/discover/ResultStates";
 import { Icon } from "@/components/ui/Icon";
 import { INDUSTRIES } from "@/lib/config";
+import type { DiscoverCenter, DiscoverMeta } from "@/types/discover";
 import type { BusinessResult, SearchQuery, SearchViewState } from "@/types/pinventa";
 
 interface ResultsWorkspaceProps {
   state: Exclude<SearchViewState, "idle">;
   query: SearchQuery;
   businesses: BusinessResult[];
+  /** Search center from the API; required to draw the real map. */
+  center?: DiscoverCenter;
+  meta?: DiscoverMeta;
+  /** Where "Edit search" goes (keeps the user's input). */
+  editHref?: string;
+  errorMessage?: string;
+  onRetry?: () => void;
 }
 
+const NO_BUSINESSES: BusinessResult[] = [];
+
 /** Split view: map on the left, summary strip and results on the right. */
-export function ResultsWorkspace({ state, query, businesses }: ResultsWorkspaceProps) {
+export function ResultsWorkspace({
+  state,
+  query,
+  businesses,
+  center,
+  meta,
+  editHref = "/discover",
+  errorMessage,
+  onRetry,
+}: ResultsWorkspaceProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
 
   const industryLabel =
     INDUSTRIES.find((i) => i.id === query.industryId)?.label ?? "No industry selected";
-  const showPins = state === "data";
-  const showRadius = state !== "error";
+  const showRealMap = center !== undefined && (state === "data" || state === "empty");
 
   function toggleSave(id: string) {
     setSavedIds((prev) => {
@@ -44,17 +63,20 @@ export function ResultsWorkspace({ state, query, businesses }: ResultsWorkspaceP
       .getElementById(`business-${id}`)
       ?.scrollIntoView({ behavior: "smooth", block: "center" });
   }
-
   return (
     <div className="grid flex-1 grid-cols-1 lg:grid-cols-12">
-      <div className="border-line lg:col-span-5 lg:border-r">
-        <MapCanvas
-          pins={showPins ? businesses : []}
-          radiusKm={showRadius ? query.radiusKm : undefined}
-          centerLabel={query.location}
-          activeId={activeId}
-          onPinSelect={focusBusiness}
-        />
+      <div className="border-line h-[420px] lg:col-span-5 lg:h-[calc(100vh-56px)] lg:sticky lg:top-14 lg:self-start lg:border-r">
+        {showRealMap ? (
+          <LiveMap
+            center={center}
+            radiusKm={query.radiusKm}
+            businesses={state === "data" ? businesses : NO_BUSINESSES}
+            activeId={activeId}
+            onSelect={focusBusiness}
+          />
+        ) : (
+          <MapCanvas />
+        )}
       </div>
 
       <div className="flex flex-col bg-canvas lg:col-span-7">
@@ -71,10 +93,10 @@ export function ResultsWorkspace({ state, query, businesses }: ResultsWorkspaceP
           </div>
           <div className="flex items-center gap-3">
             <span className="font-mono text-[12px] text-ink-2" aria-live="polite">
-              {state === "data" ? `${businesses.length} results` : "0 results"}
+              {state === "data" ? `${businesses.length} results` : state === "empty" ? "0 results" : "—"}
             </span>
             <Link
-              href="/discover"
+              href={editHref}
               className="inline-flex h-7 items-center gap-1 rounded border border-line bg-card px-2.5 text-[12px] font-semibold hover:border-primary hover:bg-stone"
             >
               Edit search
@@ -82,9 +104,21 @@ export function ResultsWorkspace({ state, query, businesses }: ResultsWorkspaceP
           </div>
         </div>
 
+        {(state === "data" || state === "empty") && meta && (
+          <div className="border-b border-line bg-stone px-6 py-2 text-[11px] leading-[16px] text-ink-2">
+            Live data from OpenStreetMap contributors (Overpass). Details are shown only as
+            listed in the source and are not verified.
+            {meta.skippedUnnamed > 0 && ` ${meta.skippedUnnamed} unnamed ${meta.skippedUnnamed === 1 ? "object was" : "objects were"} skipped.`}
+            {meta.duplicatesMerged > 0 && ` ${meta.duplicatesMerged} duplicate ${meta.duplicatesMerged === 1 ? "record was" : "records were"} merged.`}
+            {meta.truncated && " Results were capped; narrow the radius or industry to see more."}
+          </div>
+        )}
+
         {state === "loading" && <LoadingResults />}
-        {state === "empty" && <EmptyResults editHref="/discover" />}
-        {state === "error" && <ErrorResults editHref="/discover" />}
+        {state === "empty" && <EmptyResults editHref={editHref} />}
+        {state === "error" && (
+          <ErrorResults editHref={editHref} onRetry={onRetry} message={errorMessage} />
+        )}
         {state === "data" && (
           <div className="flex flex-col gap-4 p-6">
             {businesses.map((business, index) => (

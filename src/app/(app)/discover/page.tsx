@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { IdleResults } from "@/components/discover/ResultStates";
 import { MapCanvas } from "@/components/discover/MapCanvas";
+import { DiscoverForm } from "@/components/discover/DiscoverForm";
 import { SearchControls } from "@/components/discover/SearchControls";
 import { Icon } from "@/components/ui/Icon";
 import { PageHeader, Panel } from "@/components/ui/Panel";
@@ -12,10 +14,12 @@ export default function DiscoverPage() {
     <div className="flex flex-1 flex-col gap-5 px-6 py-6">
       <PageHeader
         title="Discover businesses"
-        description="Set a center point, radius, and industry. Discovery results will come from OpenStreetMap once the backend is connected; nothing is searched yet."
+        description="Set a center point, radius, and industry. Results come from OpenStreetMap data when you search; nothing is searched until you submit."
       />
 
-      <SearchControls />
+      <Suspense fallback={<SearchControls />}>
+        <DiscoverForm />
+      </Suspense>
 
       <div className="grid min-h-[480px] flex-1 grid-cols-1 gap-5 lg:grid-cols-12">
         <Panel
