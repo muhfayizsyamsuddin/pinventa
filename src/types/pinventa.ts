@@ -121,6 +121,12 @@ export interface Lead {
   hypotheses: OpportunityHypothesis[];
   sourceLabel: string;
   dataOrigin: DataOrigin;
+  /** Live metadata fields (optional) */
+  osmUrl?: string;
+  completeness?: DataCompleteness;
+  email?: string;
+  websiteUrl?: string;
+  phoneNumber?: string;
 }
 
 /** Human-review lifecycle for an outreach draft. Drafts are never sent. */

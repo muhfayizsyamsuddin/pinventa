@@ -1,11 +1,12 @@
 import type { ReactNode } from "react";
 import { MobileNav, Sidebar } from "@/components/layout/Sidebar";
 import { TopBar } from "@/components/layout/TopBar";
+import { LeadStoreProvider } from "@/context/LeadStoreContext";
 
 /** Shared shell for Discover, Leads, and Outreach. */
 export default function AppLayout({ children }: { children: ReactNode }) {
   return (
-    <>
+    <LeadStoreProvider>
       <Sidebar />
       <div className="flex min-h-screen flex-col lg:pl-[220px]">
         <MobileNav />
@@ -15,6 +16,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           Pinventa · internal prototype · map data © OpenStreetMap contributors.
         </footer>
       </div>
-    </>
+    </LeadStoreProvider>
   );
 }

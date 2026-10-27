@@ -30,7 +30,8 @@ function cell(value: string | number | boolean): string {
 
 export function leadsToCsv(leads: Lead[]): string {
   const rows = leads.map((lead) => {
-    const total = totalScore(lead.components);
+    const hasScores = lead.components.length > 0;
+    const total = hasScores ? totalScore(lead.components) : "unscored";
     const points = Object.fromEntries(
       lead.components.map((c) => [c.key, componentPoints(c).toFixed(1)]),
     );
@@ -45,11 +46,11 @@ export function leadsToCsv(leads: Lead[]): string {
       lead.emailReady,
       lead.status,
       total,
-      points.fit,
-      points.opportunity,
-      points.contact,
-      points.quality,
-      priorityBand(total),
+      points.fit ?? "—",
+      points.opportunity ?? "—",
+      points.contact ?? "—",
+      points.quality ?? "—",
+      hasScores ? priorityBand(typeof total === "number" ? total : 0) : "unscored",
       lead.sourceLabel,
       lead.dataOrigin,
     ]

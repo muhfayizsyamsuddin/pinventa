@@ -8,6 +8,7 @@ import type { DraftStatus, OutreachDraft } from "@/types/pinventa";
 interface DraftEditorProps {
   draft: OutreachDraft;
   recipientNote: string;
+  recipientDisplay?: string;
   message: string;
   onChange: (patch: Partial<Pick<OutreachDraft, "subject" | "body">>) => void;
   onStatus: (status: DraftStatus) => void;
@@ -26,6 +27,7 @@ function wordCount(text: string) {
 export function DraftEditor({
   draft,
   recipientNote,
+  recipientDisplay,
   message,
   onChange,
   onStatus,
@@ -48,7 +50,9 @@ export function DraftEditor({
         <span className="label-caps">Recipient</span>
         <div className="flex items-center gap-2 rounded border border-line bg-sunken px-3 py-2.5 font-mono text-[12px]">
           <span className="text-ink-3">To:</span>
-          <span className="rounded-sm bg-strong px-1.5 py-0.5">[Recipient not verified]</span>
+          <span className="rounded-sm bg-strong px-1.5 py-0.5">
+            {recipientDisplay ?? "[Recipient not verified — address needs verification]"}
+          </span>
         </div>
         <p className="flex items-start gap-1.5 text-[12px] text-ink-2">
           <Icon name="info" size={14} className="mt-0.5 shrink-0 text-amber" />

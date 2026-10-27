@@ -97,7 +97,11 @@ export function LeadsTable({ leads, selectedIds, onToggle, onToggleAll }: LeadsT
                   </div>
                 </td>
                 <td className="px-3 py-3 align-top">
-                  <LeadScore total={totalScore(lead.components)} illustrative={lead.dataOrigin === "demo"} />
+                  <LeadScore
+                    total={totalScore(lead.components)}
+                    illustrative={lead.dataOrigin === "demo"}
+                    unscored={lead.components.length === 0}
+                  />
                 </td>
                 <td className="px-3 py-3 align-top">
                   <div className="flex flex-col items-start gap-1">

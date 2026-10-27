@@ -166,6 +166,7 @@ export function BusinessResultRow({
             <Icon name={saved ? "check" : "bookmark"} size={13} />
             {saved ? "Saved" : "Save lead"}
           </Button>
+          {/* Demo leads: inspect via static leadId */}
           {business.leadId && (
             <Link
               href={`/leads/${business.leadId}`}
@@ -175,8 +176,19 @@ export function BusinessResultRow({
               <Icon name="chevron-right" size={13} />
             </Link>
           )}
+          {/* Live leads: show inspect link after saving */}
+          {!business.leadId && saved && business.dataOrigin === "live" && (
+            <Link
+              href={`/leads/${business.id}`}
+              className="inline-flex h-7 items-center gap-1 rounded border border-primary bg-card px-2.5 text-[12px] font-semibold text-primary hover:bg-stone"
+            >
+              Inspect lead
+              <Icon name="chevron-right" size={13} />
+            </Link>
+          )}
         </div>
       </div>
+
     </article>
   );
 }

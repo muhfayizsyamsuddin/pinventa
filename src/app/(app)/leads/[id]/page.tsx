@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { HypothesisList, ObservedFacts } from "@/components/leads/LeadFacts";
+import { LiveLeadDetail } from "@/components/leads/LiveLeadDetail";
 import { ScoreBreakdown } from "@/components/leads/ScoreBreakdown";
 import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { DemoNotice } from "@/components/ui/Panel";
 import { DemoBadge, LeadStatusBadge } from "@/components/ui/StatusBadge";
 import { DEMO_LEADS, findDemoLead } from "@/data/illustrative";
+import type { Lead } from "@/types/pinventa";
 
 export function generateStaticParams() {
   return DEMO_LEADS.map((lead) => ({ id: lead.id }));
@@ -19,7 +20,7 @@ export async function generateMetadata({
 }: PageProps<"/leads/[id]">): Promise<Metadata> {
   const { id } = await params;
   const lead = findDemoLead(id);
-  return { title: lead ? `${lead.name} · Lead detail` : "Lead not found" };
+  return { title: lead ? `${lead.name} · Lead detail` : "Lead detail · Pinventa" };
 }
 
 export default function LeadDetailPage({ params }: PageProps<"/leads/[id]">) {
@@ -38,8 +39,16 @@ export default function LeadDetailPage({ params }: PageProps<"/leads/[id]">) {
 
 async function LeadContent({ params }: Pick<PageProps<"/leads/[id]">, "params">) {
   const { id } = await params;
-  const lead = findDemoLead(id);
-  if (!lead) notFound();
+  const demoLead = findDemoLead(id);
+
+  if (!demoLead) {
+    return <LiveLeadDetail id={id} />;
+  }
+
+  return <DemoLeadView lead={demoLead} />;
+}
+
+function DemoLeadView({ lead }: { lead: Lead }) {
   const isDemo = lead.dataOrigin === "demo";
 
   return (

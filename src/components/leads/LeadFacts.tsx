@@ -38,7 +38,20 @@ export function ObservedFacts({
                       : "font-mono text-[13px] font-medium text-ink"
                   }
                 >
-                  {fact.value ?? "Not listed"}
+                  {fact.value === null ? (
+                    "Not listed"
+                  ) : fact.value.startsWith("http://") || fact.value.startsWith("https://") ? (
+                    <a
+                      href={fact.value}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary-press underline-offset-2 hover:underline"
+                    >
+                      {fact.value} ↗
+                    </a>
+                  ) : (
+                    fact.value
+                  )}
                 </dd>
               </div>
               {fact.tag && (

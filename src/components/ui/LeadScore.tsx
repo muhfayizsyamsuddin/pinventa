@@ -13,10 +13,25 @@ interface LeadScoreProps {
   showBand?: boolean;
   /** Mark scores that are not computed from real data. */
   illustrative?: boolean;
+  /** True when the lead has not been evaluated by an AI scoring agent yet. */
+  unscored?: boolean;
 }
 
 /** Compact total score with a 4px meter (DESIGN.md: Explainable Scoring Meters). */
-export function LeadScore({ total, showBand = false, illustrative = false }: LeadScoreProps) {
+export function LeadScore({
+  total,
+  showBand = false,
+  illustrative = false,
+  unscored = false,
+}: LeadScoreProps) {
+  if (unscored) {
+    return (
+      <div className="flex flex-col items-end gap-1">
+        <span className="font-mono text-[12px] text-ink-3">— / 100</span>
+        <span className="text-[10px] italic text-ink-3">Not scored</span>
+      </div>
+    );
+  }
   const band = priorityBand(total);
   const color = BAND_COLOR[band];
   return (

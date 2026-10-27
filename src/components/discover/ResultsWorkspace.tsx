@@ -11,6 +11,7 @@ import {
   LoadingResults,
 } from "@/components/discover/ResultStates";
 import { Icon } from "@/components/ui/Icon";
+import { useLeadStore } from "@/context/LeadStoreContext";
 import { INDUSTRIES } from "@/lib/config";
 import type { DiscoverCenter, DiscoverMeta } from "@/types/discover";
 import type { BusinessResult, SearchQuery, SearchViewState } from "@/types/pinventa";
@@ -42,19 +43,20 @@ export function ResultsWorkspace({
   onRetry,
 }: ResultsWorkspaceProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
+  const { hasLead, saveLead, unsaveLead } = useLeadStore();
 
   const industryLabel =
     INDUSTRIES.find((i) => i.id === query.industryId)?.label ?? "No industry selected";
   const showRealMap = center !== undefined && (state === "data" || state === "empty");
 
   function toggleSave(id: string) {
-    setSavedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
+    const business = businesses.find((b) => b.id === id);
+    if (!business) return;
+    if (hasLead(id)) {
+      unsaveLead(id);
+    } else {
+      saveLead(business);
+    }
   }
 
   function focusBusiness(id: string) {
@@ -127,7 +129,7 @@ export function ResultsWorkspace({
                 business={business}
                 index={index}
                 active={business.id === activeId}
-                saved={savedIds.has(business.id)}
+                saved={hasLead(business.id)}
                 onHover={setActiveId}
                 onToggleSave={toggleSave}
               />

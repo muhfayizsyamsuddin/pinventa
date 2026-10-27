@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
+import { LiveLeadOutreach } from "@/components/outreach/LiveLeadOutreach";
 import { OutreachStudio } from "@/components/outreach/OutreachStudio";
 import { Icon } from "@/components/ui/Icon";
 import { DemoNotice, PageHeader, Panel, StateMessage } from "@/components/ui/Panel";
@@ -27,7 +28,14 @@ async function OutreachContent({
 }: Pick<PageProps<"/outreach">, "searchParams">) {
   const params = await searchParams;
   const leadParam = Array.isArray(params.lead) ? params.lead[0] : params.lead;
-  const lead = findDemoLead(leadParam ?? "") ?? DEMO_LEADS[0];
+  const demoLead = leadParam ? findDemoLead(leadParam) : undefined;
+
+  // If a lead is specified and it is not in demo fixtures, render live lead outreach
+  if (leadParam && !demoLead) {
+    return <LiveLeadOutreach leadId={leadParam} />;
+  }
+
+  const lead = demoLead ?? DEMO_LEADS[0];
   const drafts = DEMO_DRAFTS.filter((d) => d.leadId === lead.id);
 
   return (

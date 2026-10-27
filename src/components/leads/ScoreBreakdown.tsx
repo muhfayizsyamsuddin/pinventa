@@ -15,6 +15,53 @@ interface ScoreBreakdownProps {
 
 /** Weighted, auditable score: each pillar shows weight, points, and reason. */
 export function ScoreBreakdown({ components, illustrative = false }: ScoreBreakdownProps) {
+  if (components.length === 0) {
+    return (
+      <Panel title="Qualification score" icon="layers" meta="Pending scoring">
+        <div className="flex flex-col gap-4 p-4">
+          <div>
+            <div className="tnum flex items-baseline gap-2 font-mono">
+              <span className="text-[36px] font-bold text-ink-3">—</span>
+              <span className="text-[18px] text-line-strong">/ 100</span>
+            </div>
+            <p className="mt-1 text-[12px] font-medium text-ink-2">Awaiting AI qualification scoring</p>
+            <div className="mt-3 rounded border border-line bg-sunken p-3 text-[12px] leading-[18px] text-ink-2">
+              <p className="font-semibold text-ink">Scoring model status:</p>
+              <p className="mt-1">
+                Automated multi-pillar AI scoring (Fit 30%, Opportunity 25%, Contact Readiness 25%, Data Quality 20%) is scheduled for Milestone 3 (n8n + OpenRouter).
+              </p>
+              <p className="mt-2 text-ink-3">
+                This lead is currently queued for human sales review under status <strong className="text-ink">Needs Verification</strong>.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between border-b border-line pb-2">
+            <h3 className="text-[13px] font-semibold">Scheduled qualification pillars</h3>
+            <span className="font-mono text-[11px] text-ink-3">4 planned pillars</span>
+          </div>
+
+          <ul className="flex flex-col gap-2">
+            {[
+              { label: "Business Fit", weight: "30%", desc: "Relevance of industry and operations to MAXY enterprise services" },
+              { label: "Opportunity Assessment", weight: "25%", desc: "Identified pain points and digital growth potential" },
+              { label: "Contact Readiness", weight: "25%", desc: "Presence and verification of communication channels" },
+              { label: "Data Quality & Traceability", weight: "20%", desc: "Verifiability of source records against OpenStreetMap" },
+            ].map((p, i) => (
+              <li key={p.label} className="rounded border border-line bg-stone p-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[12px] font-semibold">{i + 1}. {p.label}</span>
+                  <span className="font-mono text-[11px] text-ink-3">{p.weight}</span>
+                </div>
+                <p className="mt-1 text-[11px] text-ink-2">{p.desc}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </Panel>
+    );
+  }
+
   const total = totalScore(components);
   const band = priorityBand(total);
   const weightSum = components.reduce((s, c) => s + c.weightPct, 0);
