@@ -371,6 +371,19 @@ export function removeLeadFromStore(id: string): Lead[] {
   return updated;
 }
 
+/** Update an existing lead by id with partial fields. Returns the updated list. */
+export function updateLeadInStore(id: string, patch: Partial<Lead>): Lead[] {
+  const existing = isStoreHydrated ? inMemoryLeads : readLeads();
+  const updated = existing.map((lead) =>
+    lead.id === id ? { ...lead, ...patch } : lead,
+  );
+  inMemoryLeads = updated;
+  isStoreHydrated = true;
+  writeLeads(updated);
+  notifyLeadStore();
+  return updated;
+}
+
 // Cross-tab synchronization
 if (typeof window !== "undefined") {
   window.addEventListener("storage", (event) => {

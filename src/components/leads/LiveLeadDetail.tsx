@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ObservedFacts } from "@/components/leads/LeadFacts";
@@ -13,8 +14,11 @@ import { evaluateLeadReviewReadiness } from "@/lib/lead-store";
 
 export function LiveLeadDetail({ id }: { id: string }) {
   const router = useRouter();
-  const { getLeadById, isHydrated, unsaveLead } = useLeadStore();
+  const { getLeadById, isHydrated, unsaveLead, updateLead } = useLeadStore();
   const lead = getLeadById(id);
+
+  const [isScoring, setIsScoring] = useState(false);
+  const [scoringError, setScoringError] = useState<string | null>(null);
 
   if (!isHydrated) {
     return (
@@ -59,6 +63,39 @@ export function LiveLeadDetail({ id }: { id: string }) {
   }
 
   const readiness = evaluateLeadReviewReadiness(lead);
+
+  async function handleScore() {
+    if (!lead) return;
+    setIsScoring(true);
+    setScoringError(null);
+    try {
+      const res = await fetch("/api/score", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lead }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        const errorMsg = data.instructions
+          ? `${data.error} ${data.instructions}`
+          : data.error || "Scoring request failed.";
+        setScoringError(errorMsg);
+        return;
+      }
+
+      // Update lead in store
+      updateLead(lead.id, {
+        components: data.components,
+        scoredAt: data.scoredAt,
+        scoringModel: data.scoringModel,
+        scoringProvider: data.scoringProvider,
+      });
+    } catch (err: unknown) {
+      setScoringError(err instanceof Error ? err.message : "Network error during scoring.");
+    } finally {
+      setIsScoring(false);
+    }
+  }
 
   function handleUnsave() {
     if (!lead) return;
@@ -114,6 +151,19 @@ export function LiveLeadDetail({ id }: { id: string }) {
               </p>
             </div>
             <div className="flex items-center gap-2">
+              <Button
+                variant={lead.components.length === 0 ? "primary" : "secondary"}
+                className="h-8 px-3 text-[12px]"
+                onClick={handleScore}
+                disabled={isScoring}
+              >
+                <Icon
+                  name={isScoring ? "loader" : lead.components.length === 0 ? "layers" : "reset"}
+                  size={13}
+                  className={isScoring ? "animate-spin" : ""}
+                />
+                {isScoring ? "Scoring…" : lead.components.length === 0 ? "Score with AI" : "Re-score"}
+              </Button>
               <Button
                 variant="secondary"
                 className="h-8 px-3 text-[12px] text-danger hover:border-danger hover:bg-danger-soft"
@@ -262,7 +312,15 @@ export function LiveLeadDetail({ id }: { id: string }) {
               </div>
             </Panel>
 
-            <ScoreBreakdown components={lead.components} />
+            <ScoreBreakdown
+              components={lead.components}
+              onScore={handleScore}
+              isScoring={isScoring}
+              error={scoringError}
+              scoringModel={lead.scoringModel}
+              scoringProvider={lead.scoringProvider}
+              scoredAt={lead.scoredAt}
+            />
           </div>
         </div>
 

@@ -19,6 +19,7 @@ import {
   hydrateLeadStore,
   removeLeadFromStore,
   subscribeLeadStore,
+  updateLeadInStore,
 } from "@/lib/lead-store";
 import type { BusinessResult, Lead } from "@/types/pinventa";
 
@@ -31,6 +32,8 @@ interface LeadStoreValue {
   saveLead: (business: BusinessResult) => void;
   /** Remove a saved lead by id. */
   unsaveLead: (id: string) => void;
+  /** Update a saved lead by id with partial fields. */
+  updateLead: (id: string, patch: Partial<Lead>) => void;
   /** True if a lead with this id is currently saved. */
   hasLead: (id: string) => boolean;
   /** Look up a saved lead by id. */
@@ -65,6 +68,10 @@ export function LeadStoreProvider({ children }: { children: ReactNode }) {
     removeLeadFromStore(id);
   }, []);
 
+  const updateLead = useCallback((id: string, patch: Partial<Lead>) => {
+    updateLeadInStore(id, patch);
+  }, []);
+
   const hasLead = useCallback(
     (id: string) => leads.some((l) => l.id === id),
     [leads],
@@ -81,10 +88,11 @@ export function LeadStoreProvider({ children }: { children: ReactNode }) {
       isHydrated,
       saveLead,
       unsaveLead,
+      updateLead,
       hasLead,
       getLeadById,
     }),
-    [leads, isHydrated, saveLead, unsaveLead, hasLead, getLeadById],
+    [leads, isHydrated, saveLead, unsaveLead, updateLead, hasLead, getLeadById],
   );
 
   return (
