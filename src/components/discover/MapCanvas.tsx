@@ -71,6 +71,8 @@ export function MapCanvas({
       )}
 
       {pins.map((pin, index) => {
+        const position = pin.pin;
+        if (!position) return null; // live records have no schematic position
         const active = pin.id === activeId;
         return (
           <button
@@ -78,7 +80,7 @@ export function MapCanvas({
             type="button"
             onClick={() => onPinSelect?.(pin.id)}
             aria-label={`Pin ${index + 1}: ${pin.name}`}
-            style={{ left: `${pin.pin.x}%`, top: `${pin.pin.y}%` }}
+            style={{ left: `${position.x}%`, top: `${position.y}%` }}
             className={`absolute z-20 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center transition-transform ${
               active ? "scale-125" : "hover:scale-110"
             }`}

@@ -28,9 +28,13 @@ export type SearchViewState = "idle" | "loading" | "empty" | "error" | "data";
 /** Whether a field was found in the source record. Never infer; never guess. */
 export type FieldAvailability = "listed" | "not_listed";
 
+/** How much of the expected detail the source record lists. Never inferred. */
+export type DataCompleteness = "good" | "partial" | "minimal";
+
 export interface BusinessResult {
   id: string;
-  leadId: string;
+  /** Only illustrative records link to a lead detail page (live leads: later milestone). */
+  leadId?: string;
   name: string;
   category: string;
   area: string;
@@ -38,9 +42,19 @@ export interface BusinessResult {
   website: FieldAvailability;
   phone: FieldAvailability;
   sourceLabel: string;
-  /** Percent position on the schematic canvas (placeholder until a real map). */
-  pin: { x: number; y: number };
+  /** Percent position on the schematic canvas (illustrative records only). */
+  pin?: { x: number; y: number };
   dataOrigin: DataOrigin;
+  /** Live (OpenStreetMap) fields; each present only if the source lists it. */
+  lat?: number;
+  lng?: number;
+  address?: string;
+  websiteUrl?: string;
+  phoneNumber?: string;
+  email?: string;
+  /** Inspectable OpenStreetMap object page. */
+  osmUrl?: string;
+  completeness?: DataCompleteness;
 }
 
 /** Statuses suggested by the MAXY study case (FR-06). */
