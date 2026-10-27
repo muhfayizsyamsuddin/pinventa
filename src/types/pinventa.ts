@@ -82,6 +82,10 @@ export interface ScoreComponent {
   score: number;
   /** Auditable explanation for the sub-score. */
   reason: string;
+  /** Factual evidence from source records supporting the sub-score. */
+  evidence?: string;
+  /** Known data limitations or unverified assumptions. */
+  limitations?: string;
 }
 
 export type PriorityBand = "high" | "medium" | "low";
@@ -127,6 +131,12 @@ export interface Lead {
   email?: string;
   websiteUrl?: string;
   phoneNumber?: string;
+  /** ISO timestamp when AI qualification scoring was performed. */
+  scoredAt?: string;
+  /** AI model used for qualification scoring. */
+  scoringModel?: string;
+  /** AI provider used for qualification scoring. */
+  scoringProvider?: string;
 }
 
 /** Human-review lifecycle for an outreach draft. Drafts are never sent. */

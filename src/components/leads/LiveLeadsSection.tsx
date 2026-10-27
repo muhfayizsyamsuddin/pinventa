@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { ExportCsvButton } from "@/components/leads/ExportCsvButton";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
@@ -43,11 +43,46 @@ const SELECT =
   "h-7 cursor-pointer rounded border border-line bg-card px-2 text-[12px] font-medium focus:border-primary focus:outline-none";
 
 export function LiveLeadsSection() {
-  const { leads, isHydrated, unsaveLead } = useLeadStore();
+  const { leads, isHydrated, unsaveLead, updateLead } = useLeadStore();
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<LiveStatusFilter>("all");
   const [scoreFilter, setScoreFilter] = useState<LiveScoreFilter>("all");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [scoringId, setScoringId] = useState<string | null>(null);
+  const [rowError, setRowError] = useState<{ id: string; message: string } | null>(null);
+
+  async function handleScoreLead(lead: (typeof leads)[0]) {
+    setScoringId(lead.id);
+    setRowError(null);
+    try {
+      const res = await fetch("/api/score", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lead }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        setRowError({
+          id: lead.id,
+          message: data.instructions ? `${data.error} ${data.instructions}` : data.error || "Scoring failed.",
+        });
+        return;
+      }
+      updateLead(lead.id, {
+        components: data.components,
+        scoredAt: data.scoredAt,
+        scoringModel: data.scoringModel,
+        scoringProvider: data.scoringProvider,
+      });
+    } catch (err: unknown) {
+      setRowError({
+        id: lead.id,
+        message: err instanceof Error ? err.message : "Network error during scoring.",
+      });
+    } finally {
+      setScoringId(null);
+    }
+  }
 
   // Evaluate each lead against Criterion 4 completeness and relevance rules
   const evaluatedLeads = useMemo(() => {
@@ -339,11 +374,11 @@ export function LiveLeadsSection() {
                     {visibleItems.map(({ lead, readiness }) => {
                       const selected = selectedIds.has(lead.id);
                       return (
-                        <tr
-                          key={lead.id}
-                          className={`group transition-colors hover:bg-stone ${selected ? "bg-canvas shadow-[inset_2px_0_0_var(--color-primary)]" : ""
-                            }`}
-                        >
+                        <Fragment key={lead.id}>
+                          <tr
+                            className={`group transition-colors hover:bg-stone ${selected ? "bg-canvas shadow-[inset_2px_0_0_var(--color-primary)]" : ""
+                              }`}
+                          >
                           <td className="px-3 py-3 align-top">
                             <input
                               type="checkbox"
@@ -402,11 +437,40 @@ export function LiveLeadsSection() {
                             )}
                           </td>
                           <td className="px-3 py-3 align-top text-right">
-                            <LeadScore
-                              total={totalScore(lead.components)}
-                              illustrative={false}
-                              unscored={lead.components.length === 0}
-                            />
+                            <div className="flex flex-col items-end gap-1.5">
+                              <LeadScore
+                                total={totalScore(lead.components)}
+                                illustrative={false}
+                                unscored={lead.components.length === 0}
+                                showBand={lead.components.length > 0}
+                              />
+                              {lead.components.length === 0 ? (
+                                <Button
+                                  variant="primary"
+                                  className="h-6 px-2 text-[11px]"
+                                  onClick={() => handleScoreLead(lead)}
+                                  disabled={scoringId === lead.id}
+                                  title="Run AI Qualification Scoring"
+                                >
+                                  <Icon
+                                    name={scoringId === lead.id ? "loader" : "layers"}
+                                    size={11}
+                                    className={scoringId === lead.id ? "animate-spin" : ""}
+                                  />
+                                  {scoringId === lead.id ? "Scoring…" : "Score"}
+                                </Button>
+                              ) : (
+                                <button
+                                  type="button"
+                                  className="text-[10px] text-ink-3 hover:text-primary hover:underline"
+                                  onClick={() => handleScoreLead(lead)}
+                                  disabled={scoringId === lead.id}
+                                  title="Re-run AI Qualification Scoring"
+                                >
+                                  {scoringId === lead.id ? "Scoring…" : "Re-score"}
+                                </button>
+                              )}
+                            </div>
                           </td>
                           <td className="px-3 py-3 align-top">
                             <div className="flex flex-col items-start gap-1">
@@ -458,8 +522,28 @@ export function LiveLeadsSection() {
                             </div>
                           </td>
                         </tr>
-                      );
-                    })}
+                        {rowError?.id === lead.id && (
+                          <tr key={`err-${lead.id}`} className="bg-danger-soft/60">
+                            <td colSpan={9} className="px-3 py-2 text-[12px] text-danger border-b border-danger/20">
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="flex items-center gap-1.5">
+                                  <Icon name="alert" size={14} className="shrink-0" />
+                                  <span>{rowError.message}</span>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => setRowError(null)}
+                                  className="text-[11px] underline text-ink-2 hover:text-ink shrink-0"
+                                >
+                                  Dismiss
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </Fragment>
+                    );
+                  })}
                   </tbody>
                 </table>
               </div>

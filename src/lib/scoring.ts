@@ -18,7 +18,7 @@ export function priorityBand(total: number): PriorityBand {
 }
 
 export const PRIORITY_LABEL: Record<PriorityBand, string> = {
-  high: "High-Priority",
-  medium: "Medium-Priority",
+  high: "High-Priority Prospect",
+  medium: "Medium-Priority Prospect",
   low: "Low-Priority / Requires Research",
 };

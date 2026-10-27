@@ -39,6 +39,15 @@ export function makeComponent(
   key: ScoreComponentKey,
   score: number,
   reason: string,
+  evidence?: string,
+  limitations?: string,
 ): ScoreComponent {
-  return { key, score, reason, ...SCORE_META[key] };
+  return {
+    key,
+    score,
+    reason,
+    ...(evidence ? { evidence } : {}),
+    ...(limitations ? { limitations } : {}),
+    ...SCORE_META[key],
+  };
 }
