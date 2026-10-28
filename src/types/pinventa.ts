@@ -67,6 +67,16 @@ export type LeadStatus =
   | "approved_for_outreach"
   | "rejected";
 
+
+export type LeadStatusChangeSource = "discovery" | "manual";
+
+export interface LeadStatusEvent {
+  from: LeadStatus | null;
+  to: LeadStatus;
+  changedAt: string;
+  source: LeadStatusChangeSource;
+}
+
 export type ScoreComponentKey =
   | "fit"
   | "opportunity"
@@ -120,6 +130,13 @@ export interface Lead {
   /** True only when a source-traceable work email exists. */
   emailReady: boolean;
   status: LeadStatus;
+
+  /** ISO timestamp of the latest workflow status change. */
+  statusUpdatedAt?: string;
+
+  /** Audit trail of status changes made in the UI or during discovery. */
+  statusHistory?: LeadStatusEvent[];
+
   components: ScoreComponent[];
   facts: ObservedFact[];
   hypotheses: OpportunityHypothesis[];

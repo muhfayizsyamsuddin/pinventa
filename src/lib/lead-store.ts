@@ -9,7 +9,13 @@
  * store (see docs/IMPLEMENTATION_PLAN.md §4).
  */
 
-import type { BusinessResult, Lead, LeadStatus, ObservedFact } from "@/types/pinventa";
+import type {
+  BusinessResult,
+  Lead,
+  LeadStatus,
+  LeadStatusEvent,
+  ObservedFact,
+} from "@/types/pinventa";
 
 export const LEAD_STORE_KEY = "pinventa:saved_leads_v1";
 
@@ -37,7 +43,7 @@ function osmRefId(osmId: string): string {
  * Live leads are not promoted to `qualified` automatically.
  */
 function initialStatus(): LeadStatus {
-  return "needs_verification";
+  return "discovered";
 }
 
 export interface LeadReviewReadiness {
@@ -163,6 +169,7 @@ export function evaluateLeadReviewReadiness(lead: Lead): LeadReviewReadiness {
 
 /** Convert a live BusinessResult (from Discover) into a Lead for storage. */
 export function businessToLead(b: BusinessResult): Lead {
+  const createdAt = new Date().toISOString();
   const facts: ObservedFact[] = [
     {
       label: "Business name",
@@ -248,6 +255,15 @@ export function businessToLead(b: BusinessResult): Lead {
      */
     emailReady: false,
     status: initialStatus(),
+    statusUpdatedAt: createdAt,
+    statusHistory: [
+      {
+        from: null,
+        to: "discovered",
+        changedAt: createdAt,
+        source: "discovery",
+      },
+    ],
     /**
      * components = []: AI scoring (LLM sub-scores for Fit, Opportunity,
      * Contact Readiness, Data Quality) is not yet implemented.
@@ -371,16 +387,46 @@ export function removeLeadFromStore(id: string): Lead[] {
   return updated;
 }
 
-/** Update an existing lead by id with partial fields. Returns the updated list. */
-export function updateLeadInStore(id: string, patch: Partial<Lead>): Lead[] {
+
+/** Update a saved lead and record changes to its workflow status. */
+export function updateLeadInStore(
+  id: string,
+  patch: Partial<Lead>,
+): Lead[] {
   const existing = isStoreHydrated ? inMemoryLeads : readLeads();
-  const updated = existing.map((lead) =>
-    lead.id === id ? { ...lead, ...patch } : lead,
-  );
+
+  const updated = existing.map((lead) => {
+    if (lead.id !== id) return lead;
+
+    const statusChanged =
+      patch.status !== undefined && patch.status !== lead.status;
+
+    if (!statusChanged || patch.status === undefined) {
+      return { ...lead, ...patch };
+    }
+
+    const changedAt = new Date().toISOString();
+
+    const event: LeadStatusEvent = {
+      from: lead.status,
+      to: patch.status,
+      changedAt,
+      source: "manual",
+    };
+
+    return {
+      ...lead,
+      ...patch,
+      statusUpdatedAt: changedAt,
+      statusHistory: [...(lead.statusHistory ?? []), event],
+    };
+  });
+
   inMemoryLeads = updated;
   isStoreHydrated = true;
   writeLeads(updated);
   notifyLeadStore();
+
   return updated;
 }
 
