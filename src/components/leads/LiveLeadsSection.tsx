@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Fragment, useMemo, useState } from "react";
 import { ExportCsvButton } from "@/components/leads/ExportCsvButton";
+import { WorkflowStatusSelect } from "@/components/leads/WorkflowStatusSelect";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { LeadScore } from "@/components/ui/LeadScore";
@@ -10,8 +11,13 @@ import { StateMessage } from "@/components/ui/Panel";
 import { LeadStatusBadge, ProvenanceBadge } from "@/components/ui/StatusBadge";
 import { useLeadStore } from "@/context/LeadStoreContext";
 import { evaluateLeadReviewReadiness } from "@/lib/lead-store";
-import { totalScore } from "@/lib/scoring";
-import type { FieldAvailability } from "@/types/pinventa";
+import { priorityBand, totalScore } from "@/lib/scoring";
+import {
+  LEAD_STATUS_OPTIONS,
+  canTransitionLeadStatus,
+} from "@/lib/lead-status";
+
+import type { FieldAvailability, LeadStatus } from "@/types/pinventa";
 
 function Presence({
   label,
@@ -36,16 +42,34 @@ function Presence({
 
 const TH = "label-caps px-3 py-2.5 text-left font-semibold";
 
-type LiveStatusFilter = "all" | "review_ready" | "needs_clarification";
+type ContactReadinessFilter =
+  | "all"
+  | "email_ready"
+  | "needs_verification";
+
+type LivePriorityFilter =
+  | "all"
+  | "high"
+  | "medium"
+  | "low"
+  | "unscored";
+
 type LiveScoreFilter = "all" | "scored" | "unscored";
 
 const SELECT =
-  "h-7 cursor-pointer rounded border border-line bg-card px-2 text-[12px] font-medium focus:border-primary focus:outline-none";
+  "h-7 cursor-pointer rounded border border-line bg-card px-2 text-[12px] font-medium text-ink focus:border-primary focus:outline-none";
 
 export function LiveLeadsSection() {
   const { leads, isHydrated, unsaveLead, updateLead } = useLeadStore();
   const [query, setQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<LiveStatusFilter>("all");
+  const [industryFilter, setIndustryFilter] = useState("all");
+
+  const [priorityFilter, setPriorityFilter] =
+    useState<LivePriorityFilter>("all");
+
+  const [contactReadinessFilter, setContactReadinessFilter] =
+    useState<ContactReadinessFilter>("all");
+  const [workflowStatusFilter, setWorkflowStatusFilter] = useState<LeadStatus | "all">("all");
   const [scoreFilter, setScoreFilter] = useState<LiveScoreFilter>("all");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [scoringId, setScoringId] = useState<string | null>(null);
@@ -104,26 +128,72 @@ export function LiveLeadsSection() {
   const countWithContact = leads.filter(
     (l) => l.website === "listed" || l.phone === "listed" || l.email,
   ).length;
+  const industries = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          leads
+            .map((lead) => lead.category.trim())
+            .filter(Boolean),
+        ),
+      ).sort((a, b) => a.localeCompare(b)),
+    [leads],
+  );
 
   const visibleItems = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return evaluatedLeads.filter(({ lead, readiness }) => {
-      // 1. Status Filter
-      if (statusFilter === "review_ready" && !readiness.isReviewReady) {
+    return evaluatedLeads.filter(({ lead }) => {
+      if (
+        workflowStatusFilter !== "all" &&
+        lead.status !== workflowStatusFilter
+      ) {
         return false;
       }
+      // 1. Status Filter
+
       if (
-        statusFilter === "needs_clarification" &&
-        readiness.isReviewReady
+        industryFilter !== "all" &&
+        lead.category !== industryFilter
       ) {
         return false;
       }
 
-      // 2. Score Filter
-      const hasScores = Array.isArray(lead.components) && lead.components.length > 0;
+      if (
+        contactReadinessFilter === "email_ready" &&
+        !lead.emailReady
+      ) {
+        return false;
+      }
+
+      if (
+        contactReadinessFilter === "needs_verification" &&
+        lead.emailReady
+      ) {
+        return false;
+      }
+
+      const hasScores =
+        Array.isArray(lead.components) &&
+        lead.components.length > 0;
+
+      if (priorityFilter === "unscored" && hasScores) {
+        return false;
+      }
+
+      if (
+        priorityFilter !== "all" &&
+        priorityFilter !== "unscored"
+      ) {
+        if (!hasScores) return false;
+
+        if (priorityBand(totalScore(lead.components)) !== priorityFilter) {
+          return false;
+        }
+      }
       if (scoreFilter === "scored" && !hasScores) {
         return false;
       }
+
       if (scoreFilter === "unscored" && hasScores) {
         return false;
       }
@@ -135,7 +205,15 @@ export function LiveLeadsSection() {
         .toLowerCase()
         .includes(q);
     });
-  }, [evaluatedLeads, query, statusFilter, scoreFilter]);
+  }, [
+    evaluatedLeads,
+    query,
+    workflowStatusFilter,
+    industryFilter,
+    priorityFilter,
+    contactReadinessFilter,
+    scoreFilter,
+  ]);
 
   const visibleLeads = useMemo(() => visibleItems.map((item) => item.lead), [visibleItems]);
   const exportable = visibleLeads.filter((l) => selectedIds.has(l.id));
@@ -310,19 +388,81 @@ export function LiveLeadsSection() {
 
             <div className="flex flex-wrap items-center gap-3 border-t border-line pt-3">
               <span className="label-caps">Filters</span>
+
               <label className="flex items-center gap-1.5 text-[12px] text-ink-2">
-                Status
+                Industry
                 <select
                   className={SELECT}
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value as LiveStatusFilter)}
-                  aria-label="Filter live leads by status"
+                  value={industryFilter}
+                  onChange={(event) => setIndustryFilter(event.target.value)}
+                  aria-label="Filter by industry"
                 >
-                  <option value="all">All</option>
-                  <option value="review_ready">Review-ready</option>
-                  <option value="needs_clarification">Needs clarification</option>
+                  <option value="all">All industries</option>
+                  {industries.map((industry) => (
+                    <option key={industry} value={industry}>
+                      {industry}
+                    </option>
+                  ))}
                 </select>
               </label>
+
+              <label className="flex items-center gap-1.5 text-[12px] text-ink-2">
+                Priority
+                <select
+                  className={SELECT}
+                  value={priorityFilter}
+                  onChange={(event) =>
+                    setPriorityFilter(event.target.value as LivePriorityFilter)
+                  }
+                  aria-label="Filter by lead priority"
+                >
+                  <option value="all">All priorities</option>
+                  <option value="high">High (80–100)</option>
+                  <option value="medium">Medium (60–79)</option>
+                  <option value="low">Low (0–59)</option>
+                  <option value="unscored">Unscored</option>
+                </select>
+              </label>
+
+              <label className="flex items-center gap-1.5 text-[12px] text-ink-2">
+                Contact readiness
+                <select
+                  className={SELECT}
+                  value={contactReadinessFilter}
+                  onChange={(event) =>
+                    setContactReadinessFilter(
+                      event.target.value as ContactReadinessFilter,
+                    )
+                  }
+                  aria-label="Filter by contact readiness"
+                >
+                  <option value="all">All contacts</option>
+                  <option value="email_ready">Email-ready</option>
+                  <option value="needs_verification">Needs Verification</option>
+                </select>
+              </label>
+
+              <label className="flex items-center gap-1.5 text-[12px] text-ink-2">
+                Workflow status
+                <select
+                  className={SELECT}
+                  value={workflowStatusFilter}
+                  onChange={(event) =>
+                    setWorkflowStatusFilter(
+                      event.target.value as LeadStatus | "all",
+                    )
+                  }
+                  aria-label="Filter leads by workflow status"
+                >
+                  <option value="all">All statuses</option>
+                  {LEAD_STATUS_OPTIONS.map((item) => (
+                    <option key={item.value} value={item.value}>
+                      {item.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
               <label className="flex items-center gap-1.5 text-[12px] text-ink-2">
                 Score
                 <select
@@ -379,171 +519,193 @@ export function LiveLeadsSection() {
                             className={`group transition-colors hover:bg-stone ${selected ? "bg-canvas shadow-[inset_2px_0_0_var(--color-primary)]" : ""
                               }`}
                           >
-                          <td className="px-3 py-3 align-top">
-                            <input
-                              type="checkbox"
-                              checked={selected}
-                              onChange={() => toggle(lead.id)}
-                              aria-label={`Select ${lead.name}`}
-                              className="mt-1 h-3.5 w-3.5 accent-primary"
-                            />
-                          </td>
-                          <td className="px-3 py-3 align-top">
-                            <div className="flex flex-col gap-1">
-                              <Link
-                                href={`/leads/${lead.id}`}
-                                className="text-[13px] font-semibold text-ink hover:text-primary"
-                              >
-                                {lead.name}
-                              </Link>
-                              {readiness.checks.isBuildingOrFacility && (
-                                <span
-                                  className="inline-flex w-fit items-center gap-1 rounded bg-amber-soft px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.04em] text-amber border border-amber/30"
-                                  title={readiness.reasons.join(". ")}
-                                >
-                                  ⚠ Identity needs review
-                                </span>
-                              )}
-                              <span className="font-mono text-[11px] text-ink-3">{lead.refId}</span>
-                            </div>
-                          </td>
-                          <td className="px-3 py-3 align-top">
-                            <p className="text-[13px] font-medium">{lead.category}</p>
-                          </td>
-                          <td className="px-3 py-3 align-top">
-                            <p className="text-[13px]">{lead.area}</p>
-                            <p className="tnum font-mono text-[11px] text-ink-3">
-                              {lead.distanceKm.toFixed(1)} km from center
-                            </p>
-                          </td>
-                          <td className="px-3 py-3 align-top">
-                            <div className="flex flex-col gap-1">
-                              <Presence label="Website" value={lead.website} icon="globe" />
-                              <Presence label="Phone" value={lead.phone} icon="phone" />
-                            </div>
-                          </td>
-                          <td className="px-3 py-3 align-top">
-                            {lead.osmUrl ? (
-                              <a
-                                href={lead.osmUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1 font-mono text-[11px] text-primary-press hover:underline"
-                              >
-                                OSM record ↗
-                              </a>
-                            ) : (
-                              <span className="font-mono text-[11px] text-ink-3">OSM</span>
-                            )}
-                          </td>
-                          <td className="px-3 py-3 align-top text-right">
-                            <div className="flex flex-col items-end gap-1.5">
-                              <LeadScore
-                                total={totalScore(lead.components)}
-                                illustrative={false}
-                                unscored={lead.components.length === 0}
-                                showBand={lead.components.length > 0}
+                            <td className="px-3 py-3 align-top">
+                              <input
+                                type="checkbox"
+                                checked={selected}
+                                onChange={() => toggle(lead.id)}
+                                aria-label={`Select ${lead.name}`}
+                                className="mt-1 h-3.5 w-3.5 accent-primary"
                               />
-                              {lead.components.length === 0 ? (
+                            </td>
+                            <td className="px-3 py-3 align-top">
+                              <div className="flex flex-col gap-1">
+                                <Link
+                                  href={`/leads/${lead.id}`}
+                                  className="text-[13px] font-semibold text-ink hover:text-primary"
+                                >
+                                  {lead.name}
+                                </Link>
+                                {readiness.checks.isBuildingOrFacility && (
+                                  <span
+                                    className="inline-flex w-fit items-center gap-1 rounded bg-amber-soft px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.04em] text-amber border border-amber/30"
+                                    title={readiness.reasons.join(". ")}
+                                  >
+                                    ⚠ Identity needs review
+                                  </span>
+                                )}
+                                <span className="font-mono text-[11px] text-ink-3">{lead.refId}</span>
+                              </div>
+                            </td>
+                            <td className="px-3 py-3 align-top">
+                              <p className="text-[13px] font-medium">{lead.category}</p>
+                            </td>
+                            <td className="px-3 py-3 align-top">
+                              <p className="text-[13px]">{lead.area}</p>
+                              <p className="tnum font-mono text-[11px] text-ink-3">
+                                {lead.distanceKm.toFixed(1)} km from center
+                              </p>
+                            </td>
+                            <td className="px-3 py-3 align-top">
+                              <div className="flex flex-col gap-1">
+                                <Presence label="Website" value={lead.website} icon="globe" />
+                                <Presence label="Phone" value={lead.phone} icon="phone" />
+                              </div>
+                            </td>
+                            <td className="px-3 py-3 align-top">
+                              {lead.osmUrl ? (
+                                <a
+                                  href={lead.osmUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1 font-mono text-[11px] text-primary-press hover:underline"
+                                >
+                                  OSM record ↗
+                                </a>
+                              ) : (
+                                <span className="font-mono text-[11px] text-ink-3">OSM</span>
+                              )}
+                            </td>
+                            <td className="px-3 py-3 align-top text-right">
+                              <div className="flex flex-col items-end gap-1.5">
+                                <LeadScore
+                                  total={totalScore(lead.components)}
+                                  illustrative={false}
+                                  unscored={lead.components.length === 0}
+                                  showBand={lead.components.length > 0}
+                                />
+                                {lead.components.length === 0 ? (
+                                  <Button
+                                    variant="primary"
+                                    className="h-6 px-2 text-[11px]"
+                                    onClick={() => handleScoreLead(lead)}
+                                    disabled={scoringId === lead.id}
+                                    title="Run AI Qualification Scoring"
+                                  >
+                                    <Icon
+                                      name={scoringId === lead.id ? "loader" : "layers"}
+                                      size={11}
+                                      className={scoringId === lead.id ? "animate-spin" : ""}
+                                    />
+                                    {scoringId === lead.id ? "Scoring…" : "Score"}
+                                  </Button>
+                                ) : (
+                                  <button
+                                    type="button"
+                                    className="text-[10px] text-ink-3 hover:text-primary hover:underline"
+                                    onClick={() => handleScoreLead(lead)}
+                                    disabled={scoringId === lead.id}
+                                    title="Re-run AI Qualification Scoring"
+                                  >
+                                    {scoringId === lead.id ? "Scoring…" : "Re-score"}
+                                  </button>
+                                )}
+                              </div>
+                            </td>
+                            <td className="px-3 py-3 align-top">
+                              <div className="flex flex-col items-start gap-1">
+                                <LeadStatusBadge status={lead.status} />
+
+                                <WorkflowStatusSelect
+                                  variant="table"
+                                  status={lead.status}
+                                  emailReady={lead.emailReady}
+                                  ariaLabel={`Change workflow status for ${lead.name}`}
+                                  onChange={(next) => {
+                                    if (canTransitionLeadStatus(lead.status, next)) {
+                                      updateLead(lead.id, { status: next });
+                                    }
+                                  }}
+                                />
+
+                                {lead.status === "approved_for_outreach" && !lead.emailReady && (
+                                  <span
+                                    className="max-w-[180px] text-[10px] leading-4 text-amber"
+                                    title="Contact information has not been independently verified."
+                                  >
+                                    Contact not verified — not email-ready
+                                  </span>
+                                )}
+
+                                {readiness.isReviewReady ? (
+                                  <span className="inline-flex items-center gap-1 font-mono text-[10px] text-sage">
+                                    ✓ Review-ready
+                                  </span>
+                                ) : readiness.checks.isBuildingOrFacility ? (
+                                  <span
+                                    className="inline-flex items-center gap-1 font-mono text-[10px] text-amber cursor-help"
+                                    title={readiness.reasons.join(". ")}
+                                  >
+                                    ⚠ Check relevance
+                                  </span>
+                                ) : (
+                                  <span
+                                    className="inline-flex items-center gap-1 font-mono text-[10px] text-ink-3 cursor-help"
+                                    title={readiness.reasons.join(". ")}
+                                  >
+                                    Data incomplete
+                                  </span>
+                                )}
+                              </div>
+                            </td>
+                            <td className="px-3 py-3 align-top">
+                              <div className="flex items-center justify-end gap-1.5">
+                                <Link
+                                  href={`/leads/${lead.id}`}
+                                  className="rounded px-2 py-1 text-[12px] font-semibold text-primary hover:bg-sunken"
+                                >
+                                  Inspect
+                                </Link>
+                                <Link
+                                  href={`/outreach?lead=${lead.id}`}
+                                  className="inline-flex items-center gap-1 rounded border border-line bg-card px-2 py-1 text-[12px] font-medium hover:border-primary hover:bg-stone"
+                                >
+                                  <Icon name="mail" size={13} className="text-primary" />
+                                  Outreach
+                                </Link>
                                 <Button
-                                  variant="primary"
-                                  className="h-6 px-2 text-[11px]"
-                                  onClick={() => handleScoreLead(lead)}
-                                  disabled={scoringId === lead.id}
-                                  title="Run AI Qualification Scoring"
+                                  variant="secondary"
+                                  className="h-6 px-1.5 text-[11px] text-ink-3 hover:text-danger"
+                                  onClick={() => unsaveLead(lead.id)}
+                                  title="Remove from saved leads"
                                 >
-                                  <Icon
-                                    name={scoringId === lead.id ? "loader" : "layers"}
-                                    size={11}
-                                    className={scoringId === lead.id ? "animate-spin" : ""}
-                                  />
-                                  {scoringId === lead.id ? "Scoring…" : "Score"}
+                                  Remove
                                 </Button>
-                              ) : (
-                                <button
-                                  type="button"
-                                  className="text-[10px] text-ink-3 hover:text-primary hover:underline"
-                                  onClick={() => handleScoreLead(lead)}
-                                  disabled={scoringId === lead.id}
-                                  title="Re-run AI Qualification Scoring"
-                                >
-                                  {scoringId === lead.id ? "Scoring…" : "Re-score"}
-                                </button>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-3 py-3 align-top">
-                            <div className="flex flex-col items-start gap-1">
-                              <LeadStatusBadge status={lead.status} />
-                              {readiness.isReviewReady ? (
-                                <span className="inline-flex items-center gap-1 font-mono text-[10px] text-sage">
-                                  ✓ Review-ready
-                                </span>
-                              ) : readiness.checks.isBuildingOrFacility ? (
-                                <span
-                                  className="inline-flex items-center gap-1 font-mono text-[10px] text-amber cursor-help"
-                                  title={readiness.reasons.join(". ")}
-                                >
-                                  ⚠ Check relevance
-                                </span>
-                              ) : (
-                                <span
-                                  className="inline-flex items-center gap-1 font-mono text-[10px] text-ink-3 cursor-help"
-                                  title={readiness.reasons.join(". ")}
-                                >
-                                  Data incomplete
-                                </span>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-3 py-3 align-top">
-                            <div className="flex items-center justify-end gap-1.5">
-                              <Link
-                                href={`/leads/${lead.id}`}
-                                className="rounded px-2 py-1 text-[12px] font-semibold text-primary hover:bg-sunken"
-                              >
-                                Inspect
-                              </Link>
-                              <Link
-                                href={`/outreach?lead=${lead.id}`}
-                                className="inline-flex items-center gap-1 rounded border border-line bg-card px-2 py-1 text-[12px] font-medium hover:border-primary hover:bg-stone"
-                              >
-                                <Icon name="mail" size={13} className="text-primary" />
-                                Outreach
-                              </Link>
-                              <Button
-                                variant="secondary"
-                                className="h-6 px-1.5 text-[11px] text-ink-3 hover:text-danger"
-                                onClick={() => unsaveLead(lead.id)}
-                                title="Remove from saved leads"
-                              >
-                                Remove
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                        {rowError?.id === lead.id && (
-                          <tr key={`err-${lead.id}`} className="bg-danger-soft/60">
-                            <td colSpan={9} className="px-3 py-2 text-[12px] text-danger border-b border-danger/20">
-                              <div className="flex items-center justify-between gap-2">
-                                <div className="flex items-center gap-1.5">
-                                  <Icon name="alert" size={14} className="shrink-0" />
-                                  <span>{rowError.message}</span>
-                                </div>
-                                <button
-                                  type="button"
-                                  onClick={() => setRowError(null)}
-                                  className="text-[11px] underline text-ink-2 hover:text-ink shrink-0"
-                                >
-                                  Dismiss
-                                </button>
                               </div>
                             </td>
                           </tr>
-                        )}
-                      </Fragment>
-                    );
-                  })}
+                          {rowError?.id === lead.id && (
+                            <tr key={`err-${lead.id}`} className="bg-danger-soft/60">
+                              <td colSpan={9} className="px-3 py-2 text-[12px] text-danger border-b border-danger/20">
+                                <div className="flex items-center justify-between gap-2">
+                                  <div className="flex items-center gap-1.5">
+                                    <Icon name="alert" size={14} className="shrink-0" />
+                                    <span>{rowError.message}</span>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => setRowError(null)}
+                                    className="text-[11px] underline text-ink-2 hover:text-ink shrink-0"
+                                  >
+                                    Dismiss
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </Fragment>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -556,8 +718,11 @@ export function LiveLeadsSection() {
                     variant="secondary"
                     onClick={() => {
                       setQuery("");
-                      setStatusFilter("all");
+                      setIndustryFilter("all");
+                      setPriorityFilter("all");
+                      setContactReadinessFilter("all");
                       setScoreFilter("all");
+                      setWorkflowStatusFilter("all");
                     }}
                     className="text-[12px]"
                   >

@@ -5,14 +5,22 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ObservedFacts } from "@/components/leads/LeadFacts";
 import { ScoreBreakdown } from "@/components/leads/ScoreBreakdown";
+import { WorkflowStatusSelect } from "@/components/leads/WorkflowStatusSelect";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { Panel, StateMessage } from "@/components/ui/Panel";
 import { LeadStatusBadge, ProvenanceBadge } from "@/components/ui/StatusBadge";
 import { useLeadStore } from "@/context/LeadStoreContext";
 import { evaluateLeadReviewReadiness } from "@/lib/lead-store";
+import {
+  canTransitionLeadStatus,
+  getLeadStatusLabel,
+} from "@/lib/lead-status";
+
+import type { LeadStatus } from "@/types/pinventa";
 
 export function LiveLeadDetail({ id }: { id: string }) {
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const router = useRouter();
   const { getLeadById, isHydrated, unsaveLead, updateLead } = useLeadStore();
   const lead = getLeadById(id);
@@ -61,6 +69,27 @@ export function LiveLeadDetail({ id }: { id: string }) {
       </div>
     );
   }
+
+  function handleStatusChange(next: LeadStatus) {
+    if (!lead) return;
+    if (next === "approved_for_outreach" && !lead.emailReady) {
+      setStatusMessage(
+        "Cannot approve for outreach: a verified work email is required.",
+      );
+      return;
+    }
+
+    if (!canTransitionLeadStatus(lead.status, next)) {
+      setStatusMessage("This status transition is not allowed.");
+      return;
+    }
+
+    updateLead(lead.id, { status: next });
+    setStatusMessage(
+      `Lead status updated to ${getLeadStatusLabel(next)}.`,
+    );
+  }
+
 
   const readiness = evaluateLeadReviewReadiness(lead);
 
@@ -150,7 +179,7 @@ export function LiveLeadDetail({ id }: { id: string }) {
                   : "Needs Verification: contact info listed in OSM requires independent verification before sales outreach."}
               </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-end gap-2.5">
               <Button
                 variant={lead.components.length === 0 ? "primary" : "secondary"}
                 className="h-8 px-3 text-[12px]"
@@ -164,6 +193,18 @@ export function LiveLeadDetail({ id }: { id: string }) {
                 />
                 {isScoring ? "Scoring…" : lead.components.length === 0 ? "Score with AI" : "Re-score"}
               </Button>
+
+
+              <WorkflowStatusSelect
+                id="live-lead-workflow-status"
+                variant="detail"
+                status={lead.status}
+                emailReady={lead.emailReady}
+                onChange={handleStatusChange}
+                ariaLabel={`Change workflow status for ${lead.name}`}
+              />
+
+
               <Button
                 variant="secondary"
                 className="h-8 px-3 text-[12px] text-danger hover:border-danger hover:bg-danger-soft"
@@ -175,6 +216,28 @@ export function LiveLeadDetail({ id }: { id: string }) {
             </div>
           </div>
         </div>
+
+        {statusMessage && (
+          <p role="status" className="text-[12px] text-sage">
+            {statusMessage}
+          </p>
+        )}
+
+        {lead.statusUpdatedAt && (
+          <p className="text-[11px] text-ink-3">
+            Status last updated:{" "}
+            {new Date(lead.statusUpdatedAt).toLocaleString("id-ID")}
+          </p>
+        )}
+
+        {lead.status === "approved_for_outreach" && !lead.emailReady && (
+          <p className="rounded border border-amber/30 bg-amber-soft p-3 text-[12px] leading-5 text-amber">
+            This lead is marked Approved for Outreach, but no independently
+            verified work email is recorded. The lead is not email-ready.
+            Verify the contact before external outreach.
+          </p>
+        )}
+
 
         {/* Flag warning if entity appears to be a physical building or property centre */}
         {readiness.checks.isBuildingOrFacility && (
