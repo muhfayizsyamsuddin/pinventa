@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ObservedFacts } from "@/components/leads/LeadFacts";
+import { HypothesisList, ObservedFacts } from "@/components/leads/LeadFacts";
 import { ScoreBreakdown } from "@/components/leads/ScoreBreakdown";
 import { WorkflowStatusSelect } from "@/components/leads/WorkflowStatusSelect";
 import { Button, ButtonLink } from "@/components/ui/Button";
@@ -118,6 +118,7 @@ export function LiveLeadDetail({ id }: { id: string }) {
         scoredAt: data.scoredAt,
         scoringModel: data.scoringModel,
         scoringProvider: data.scoringProvider,
+        hypotheses: data.hypotheses && data.hypotheses.length > 0 ? data.hypotheses : lead.hypotheses,
       });
     } catch (err: unknown) {
       setScoringError(err instanceof Error ? err.message : "Network error during scoring.");
@@ -257,28 +258,32 @@ export function LiveLeadDetail({ id }: { id: string }) {
           <div className="flex flex-col gap-6 lg:col-span-7">
             <ObservedFacts facts={lead.facts} sourceLabel={lead.sourceLabel} />
 
-            <Panel
-              title="Potential opportunities"
-              icon="lightbulb"
-              meta="AI Agent — Milestone 3"
-            >
-              <div className="flex flex-col gap-3 p-4">
-                <p className="rounded border border-line bg-sunken p-3 text-[12px] leading-[18px] text-ink-2">
-                  <strong className="font-semibold text-ink">Analytical note:</strong>{" "}
-                  Analytical hypotheses will be synthesized by the AI Agent pipeline (n8n + OpenRouter)
-                  in Milestone 3. Pinventa does not fabricate assumptions or business challenges from raw
-                  map metadata alone.
-                </p>
-                <div className="rounded-lg border border-dashed border-line bg-stone p-4 text-center">
-                  <p className="text-[12px] font-medium text-ink-2">
-                    No automated hypotheses yet for this live lead.
+            {lead.hypotheses && lead.hypotheses.length > 0 ? (
+              <HypothesisList hypotheses={lead.hypotheses} />
+            ) : (
+              <Panel
+                title="Potential opportunities"
+                icon="lightbulb"
+                meta="AI Agent — Milestone 3"
+              >
+                <div className="flex flex-col gap-3 p-4">
+                  <p className="rounded border border-line bg-sunken p-3 text-[12px] leading-[18px] text-ink-2">
+                    <strong className="font-semibold text-ink">Analytical note:</strong>{" "}
+                    Analytical hypotheses will be synthesized by the AI Agent pipeline (n8n + OpenRouter)
+                    in Milestone 3. Pinventa does not fabricate assumptions or business challenges from raw
+                    map metadata alone.
                   </p>
-                  <p className="mt-1 text-[11px] text-ink-3">
-                    Use the observed facts above and open the Outreach Studio to compose a draft manually.
-                  </p>
+                  <div className="rounded-lg border border-dashed border-line bg-stone p-4 text-center">
+                    <p className="text-[12px] font-medium text-ink-2">
+                      No automated hypotheses yet for this live lead.
+                    </p>
+                    <p className="mt-1 text-[11px] text-ink-3">
+                      Click &quot;Score with AI&quot; to synthesize grounded hypotheses, or use observed facts to compose a draft manually.
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </Panel>
+              </Panel>
+            )}
           </div>
 
           <div className="flex flex-col gap-6 lg:col-span-5">

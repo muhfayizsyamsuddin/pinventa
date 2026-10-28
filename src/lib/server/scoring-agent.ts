@@ -1,6 +1,6 @@
 import { SCORE_META } from "@/lib/config";
 import { PRIORITY_LABEL, priorityBand, totalScore } from "@/lib/scoring";
-import type { Lead, PriorityBand, ScoreComponent, ScoreComponentKey } from "@/types/pinventa";
+import type { Lead, OpportunityHypothesis, PriorityBand, ScoreComponent, ScoreComponentKey } from "@/types/pinventa";
 
 export interface AIProviderConfig {
   provider: "openrouter" | "gemini" | "openai" | null;
@@ -18,6 +18,7 @@ export interface ScoreAgentResultSuccess {
   scoredAt: string;
   scoringModel: string;
   scoringProvider: string;
+  hypotheses: OpportunityHypothesis[];
 }
 
 export interface ScoreAgentResultError {
@@ -100,6 +101,12 @@ YOUR CRITICAL RULES:
      - reason (clear analytical justification, 1-2 sentences)
      - evidence (factual facts from source data supporting this assessment)
      - limitations (known gaps, missing data, or unverified aspects)
+5. POTENTIAL OPPORTUNITIES (HYPOTHESES):
+   - Synthesize 1 to 3 grounded potential opportunity hypotheses relevant to MAXY Academy's B2B enterprise services (Corporate AI training/upskilling, digital workflows, process automation, or client intake solutions).
+   - kindLabel: Short badge label (e.g. 'Workflow opportunity', 'AI upskilling', 'Digital enablement', 'Service positioning')
+   - title: Clear, descriptive opportunity title
+   - body: Objective hypothesis explaining the opportunity (1-2 sentences), strictly noting it is a testable hypothesis and not an observed internal flaw.
+   - basis: Explicit basis grounded in observed facts (e.g. 'Basis: business category and presence of listed website. No internal review performed.')
 
 You MUST reply with ONLY a single valid JSON object in this exact format without any markdown backticks:
 {
@@ -126,7 +133,16 @@ You MUST reply with ONLY a single valid JSON object in this exact format without
     "reason": "...",
     "evidence": "...",
     "limitations": "..."
-  }
+  },
+  "hypotheses": [
+    {
+      "id": "h1",
+      "kindLabel": "Workflow opportunity",
+      "title": "...",
+      "body": "...",
+      "basis": "..."
+    }
+  ]
 }`;
 
   const user = `EVALUATE THIS LEAD:
@@ -146,7 +162,7 @@ Email Ready: ${lead.emailReady ? "Yes (work email on record)" : "No (requires in
 Observed Facts on Record:
 ${observedFactsList || "- None listed"}
 
-Evaluate each of the 4 pillars (fit, opportunity, contact, quality) according to the instructions.`;
+Evaluate each of the 4 pillars (fit, opportunity, contact, quality) and provide 1 to 3 potential opportunity hypotheses according to the instructions.`;
 
   return { system, user };
 }
@@ -158,11 +174,83 @@ interface RawPillarResponse {
   limitations?: string;
 }
 
+interface RawHypothesisResponse {
+  id?: string;
+  kindLabel?: string;
+  title?: string;
+  body?: string;
+  basis?: string;
+}
+
 interface RawAIResponse {
   fit?: RawPillarResponse;
   opportunity?: RawPillarResponse;
   contact?: RawPillarResponse;
   quality?: RawPillarResponse;
+  hypotheses?: RawHypothesisResponse[];
+}
+
+/** Extract, clamp, and validate AI hypotheses, or build grounded fallback hypotheses. */
+export function validateAndBuildHypotheses(
+  rawJsonText: string,
+  lead?: Lead,
+): OpportunityHypothesis[] {
+  let cleaned = rawJsonText.trim();
+  if (cleaned.startsWith("```")) {
+    cleaned = cleaned.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
+  }
+
+  const result: OpportunityHypothesis[] = [];
+
+  try {
+    const parsed = JSON.parse(cleaned) as RawAIResponse;
+    if (parsed && Array.isArray(parsed.hypotheses)) {
+      parsed.hypotheses.forEach((item, index) => {
+        if (!item || typeof item !== "object") return;
+        const title = (item.title || "").trim();
+        const body = (item.body || "").trim();
+        if (!title && !body) return;
+
+        result.push({
+          id: item.id?.trim() || `h-${index + 1}`,
+          kindLabel: item.kindLabel?.trim() || "Workflow opportunity",
+          title: title || `Opportunity for ${lead?.category || "business"}`,
+          body: body || "Hypothesis based on observed commercial activity and digital presence.",
+          basis:
+            item.basis?.trim() ||
+            `Basis: observed business category (${lead?.category || "listed"}) and recorded presence.`,
+        });
+      });
+    }
+  } catch {
+    // If JSON parsing fails, fallback handles it
+  }
+
+  // If AI didn't provide any hypotheses, synthesize grounded fallback hypotheses
+  if (result.length === 0 && lead) {
+    const category = lead.category || "Commercial enterprise";
+    const hasWeb = lead.website === "listed";
+
+    result.push({
+      id: "h1",
+      kindLabel: "Workflow opportunity",
+      title: `Client intake & engagement automation for ${category}`,
+      body: `Firms in ${category} often manage prospective client inquiries and requirements manually. Automated enquiry triage and digital workflows could streamline initial client intake.`,
+      basis: `Basis: business category (${category}) recorded in OSM. Internal operations have not been evaluated.`,
+    });
+
+    if (hasWeb) {
+      result.push({
+        id: "h2",
+        kindLabel: "AI upskilling",
+        title: `Enterprise AI workflow adoption for ${category}`,
+        body: `With an active digital footprint, this business could explore executive or operational upskilling in generative AI tools to enhance team productivity and service turnaround.`,
+        basis: `Basis: presence of listed website (${lead.websiteUrl || "on record"}) and commercial sector. Content has not been audited.`,
+      });
+    }
+  }
+
+  return result;
 }
 
 /** Sanitize, clamp, and validate AI JSON response into official ScoreComponent array. */
@@ -434,6 +522,9 @@ export async function qualifyLeadWithAI(lead: Lead): Promise<ScoreAgentResult> {
       };
     }
 
+    // Extract and validate potential opportunities hypotheses
+    const hypotheses = validateAndBuildHypotheses(rawText, lead);
+
     // Deterministically compute total score and priority band using official formula
     const total = totalScore(components);
     const band = priorityBand(total);
@@ -447,6 +538,7 @@ export async function qualifyLeadWithAI(lead: Lead): Promise<ScoreAgentResult> {
       scoredAt: new Date().toISOString(),
       scoringModel: config.model,
       scoringProvider: config.provider,
+      hypotheses,
     };
   } catch (err: unknown) {
     if (err instanceof Error && err.name === "AbortError") {

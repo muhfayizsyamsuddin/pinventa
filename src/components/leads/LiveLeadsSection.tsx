@@ -97,6 +97,7 @@ export function LiveLeadsSection() {
         scoredAt: data.scoredAt,
         scoringModel: data.scoringModel,
         scoringProvider: data.scoringProvider,
+        hypotheses: data.hypotheses && data.hypotheses.length > 0 ? data.hypotheses : lead.hypotheses,
       });
     } catch (err: unknown) {
       setRowError({
