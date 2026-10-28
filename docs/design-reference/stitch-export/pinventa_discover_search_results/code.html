@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_dashboard" name="shell-type"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
+    }
+    ::-webkit-scrollbar { display: none; }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface": "#F7F5F0",
+            "background": "#F7F5F0",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#f2efe9",
+            "surface-container": "#ece8e1",
+            "surface-container-high": "#e5e0d7",
+            "surface-container-highest": "#ddd7cd",
+            "on-surface": "#1e201d",
+            "on-surface-variant": "#5a5e57",
+            "outline": "#8a8e86",
+            "outline-variant": "#cfcac0",
+            "primary": "#9e3c23",
+            "primary-container": "#be5438",
+            "on-primary": "#ffffff",
+            "secondary": "#3d5c4b",
+            "secondary-container": "#cbe6d7",
+            "on-secondary-container": "#173627",
+            "tertiary": "#874e00"
+          },
+          fontFamily: {
+            "body-sm": ["Inter", "sans-serif"],
+            "body-md": ["Inter", "sans-serif"],
+            "body-lg": ["Inter", "sans-serif"],
+            "headline-sm": ["Inter", "sans-serif"],
+            "headline-md": ["Inter", "sans-serif"],
+            "headline-lg": ["Inter", "sans-serif"],
+            "label-sm": ["Inter", "sans-serif"],
+            "label-md": ["Inter", "sans-serif"],
+            "label-caps": ["Inter", "sans-serif"],
+            "mono-data": ["Space Mono", "monospace"]
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-surface font-body-md text-on-surface antialiased">
+<!-- Sidebar -->
+<aside class="fixed left-0 top-0 h-full w-[220px] bg-surface-container-low border-r border-surface-container-highest z-50 flex flex-col justify-between select-none">
+<div class="flex flex-col">
+<div class="h-14 px-4 flex items-center justify-between border-b border-surface-container-highest">
+<div class="flex items-center gap-2">
+<div class="w-6 h-6 rounded flex items-center justify-center bg-primary text-on-primary">
+<span class="material-symbols-outlined text-[16px]">explore</span>
+</div>
+<span class="font-headline-sm font-semibold tracking-tight text-on-surface">Pinventa</span>
+</div>
+<span class="font-mono-data text-[11px] text-on-surface-variant">v1.4</span>
+</div>
+<div class="px-3 pt-3 pb-1">
+<span class="font-label-caps text-[11px] tracking-wider font-semibold uppercase text-on-surface-variant">Domains</span>
+</div>
+<nav class="flex flex-col px-2 gap-1">
+<a aria-current="page" class="flex items-center gap-2.5 px-3 py-2 rounded transition-colors bg-surface-container-lowest text-primary font-semibold border-l-2 border-primary shadow-xs" href="#">
+<span class="material-symbols-outlined text-[18px]">my_location</span>
+<span class="text-sm">Discover</span>
+</a>
+<a class="flex items-center gap-2.5 px-3 py-2 rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">table_chart</span>
+<span class="text-sm">Leads</span>
+</a>
+<a class="flex items-center gap-2.5 px-3 py-2 rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">drafts</span>
+<span class="text-sm">Outreach</span>
+</a>
+</nav>
+</div>
+<div class="flex flex-col border-t border-surface-container-highest bg-surface-container-low">
+<div class="p-3 flex items-center justify-between gap-2">
+<div class="flex items-center gap-2.5 min-w-0">
+<div class="w-7 h-7 rounded bg-secondary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-white text-[16px]">domain</span>
+</div>
+<div class="flex flex-col truncate">
+<span class="text-xs font-semibold text-on-surface truncate">Workspace</span>
+<span class="text-[11px] text-on-surface-variant truncate">Research Team</span>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Wrap -->
+<div class="pl-[220px]">
+<!-- Top Header -->
+<header class="fixed top-0 left-[220px] right-0 h-14 bg-surface border-b border-surface-container-highest z-40 flex items-center justify-between px-6">
+<div class="flex items-center gap-3">
+<span class="text-xs tracking-wider uppercase font-semibold text-on-surface-variant">Territory Search</span>
+<span class="text-outline-variant font-mono-data">/</span>
+<span class="font-mono-data text-xs text-on-surface">Raffles Place, Singapore</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[18px]">person</span>
+</div>
+</div>
+</header>
+<main class="relative pt-14 w-full min-h-screen bg-surface flex flex-col">
+<!-- Prominent Persistent Disclaimer Banner -->
+<div class="w-full bg-surface-container-high border-b border-surface-container-highest px-6 py-2 flex items-center justify-between">
+<div class="flex items-center gap-2 text-on-surface-variant text-xs">
+<span class="material-symbols-outlined text-[16px] text-tertiary">info</span>
+<span class="font-medium">
+            Illustrative preview — not live data. Replaceable by live query results.
+          </span>
+</div>
+<div class="text-[11px] font-mono-data text-on-surface-variant">
+          Sample Scope: 3 Records
+        </div>
+</div>
+<!-- Main Workspace 2-Column Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 flex-1 min-h-[calc(100vh-86px)]">
+<!-- LEFT COLUMN: Central Singapore / Raffles Place Map (5 of 12 cols = ~42-45%) -->
+<div class="lg:col-span-5 relative bg-[#e9e6df] border-r border-surface-container-highest flex flex-col select-none overflow-hidden min-h-[460px] lg:min-h-0">
+<!-- Stylized Schematic Vector Map for Central Singapore / Marina Bay / Raffles Place -->
+<div class="relative w-full h-full min-h-[480px] bg-[#e6e2d8] overflow-hidden flex flex-col justify-between p-4">
+<svg class="absolute inset-0 w-full h-full" preserveaspectratio="xMidYMid slice" viewbox="0 0 600 700" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<pattern height="40" id="urbanGrid" patternunits="userSpaceOnUse" width="40">
+<path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ddd7cc" stroke-width="0.8"></path>
+</pattern>
+</defs>
+<rect fill="#eae6dc" height="700" width="600"></rect>
+<rect fill="url(#urbanGrid)" height="700" width="600"></rect>
+<!-- Singapore River & Marina Reservoir water bodies -->
+<!-- Singapore River winding into Marina Bay -->
+<path d="M 120 180 C 180 220 220 280 260 330 C 290 370 310 390 340 400 C 400 420 440 450 490 530 C 530 600 580 640 620 660 L 620 720 L 320 720 C 350 630 380 540 330 460 C 290 410 240 380 180 340 C 130 300 80 250 40 240 L 40 180 Z" fill="#cadbe0" opacity="0.95"></path>
+<!-- Major road arterials -->
+<!-- Shenton Way / Robinson Rd corridor -->
+<path d="M 330 200 L 290 520" stroke="#d5cfc2" stroke-linecap="round" stroke-width="6"></path>
+<path d="M 230 260 L 380 430" stroke="#d5cfc2" stroke-linecap="round" stroke-width="5"></path>
+<path d="M 160 380 L 460 320" stroke="#d5cfc2" stroke-linecap="round" stroke-width="4"></path>
+<path d="M 280 140 L 320 600" stroke="#ffffff" stroke-dasharray="6,4" stroke-width="2"></path>
+<!-- Central Raffles Place core anchor marker -->
+<circle cx="300" cy="350" fill="#9e3c23" r="4"></circle>
+<!-- 3 km circular buffer around Raffles Place -->
+<circle cx="300" cy="350" fill="#9e3c23" fill-opacity="0.08" r="190" stroke="#9e3c23" stroke-dasharray="4,4" stroke-width="1.5"></circle>
+<!-- Inner guide ring (1.5 km) -->
+<circle cx="300" cy="350" fill="none" r="95" stroke="#9e3c23" stroke-opacity="0.3" stroke-width="0.75"></circle>
+</svg>
+<!-- Map Header Overlay HUD -->
+<div class="relative z-10 flex items-center justify-between">
+<div class="bg-surface-container-lowest/95 backdrop-blur-sm px-2.5 py-1 rounded shadow-xs border border-surface-container-highest flex items-center gap-2">
+<span class="material-symbols-outlined text-[15px] text-primary">location_searching</span>
+<span class="text-xs font-semibold text-on-surface">Raffles Place (018981)</span>
+<span class="text-[10px] text-on-surface-variant font-mono-data bg-surface-container px-1 py-0.5 rounded">3 km buffer</span>
+</div>
+</div>
+<!-- Spatial Pins (Strictly 1, 2, 3 corresponding to Example Business A, B, C) -->
+<!-- Pin 1: Example Business A (0.4 km - Close to Center) -->
+<div class="absolute cursor-pointer transition-all duration-200 hover:scale-110 top-[48%] left-[53%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group z-20" id="map-pin-1" onclick="focusRecord(1)">
+<div class="bg-primary text-on-primary w-6 h-6 rounded-full flex items-center justify-center font-mono-data text-xs font-bold shadow-md ring-2 ring-white">
+                1
+              </div>
+<div class="bg-surface-container-lowest text-on-surface border border-surface-container-highest px-1.5 py-0.5 mt-1 rounded text-[10px] font-medium shadow-xs whitespace-nowrap">
+                Example Business A
+              </div>
+</div>
+<!-- Pin 2: Example Business B (1.1 km) -->
+<div class="absolute cursor-pointer transition-all duration-200 hover:scale-110 top-[38%] left-[45%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group z-20" id="map-pin-2" onclick="focusRecord(2)">
+<div class="bg-primary text-on-primary w-6 h-6 rounded-full flex items-center justify-center font-mono-data text-xs font-bold shadow-md ring-2 ring-white">
+                2
+              </div>
+<div class="bg-surface-container-lowest text-on-surface border border-surface-container-highest px-1.5 py-0.5 mt-1 rounded text-[10px] font-medium shadow-xs whitespace-nowrap">
+                Example Business B
+              </div>
+</div>
+<!-- Pin 3: Example Business C (2.2 km) -->
+<div class="absolute cursor-pointer transition-all duration-200 hover:scale-110 top-[66%] left-[36%] -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group z-20" id="map-pin-3" onclick="focusRecord(3)">
+<div class="bg-primary text-on-primary w-6 h-6 rounded-full flex items-center justify-center font-mono-data text-xs font-bold shadow-md ring-2 ring-white">
+                3
+              </div>
+<div class="bg-surface-container-lowest text-on-surface border border-surface-container-highest px-1.5 py-0.5 mt-1 rounded text-[10px] font-medium shadow-xs whitespace-nowrap">
+                Example Business C
+              </div>
+</div>
+<!-- Map Footer Overlay: Clean zoom controls and scale indicator -->
+<div class="relative z-10 flex items-end justify-between w-full">
+<!-- Scale reference -->
+<div class="bg-surface-container-lowest/95 border border-surface-container-highest px-2.5 py-1.5 rounded shadow-xs flex flex-col gap-0.5">
+<div class="text-[10px] text-on-surface-variant font-mono-data">
+                  Central Singapore • Raffles Place
+                </div>
+<div class="flex items-center gap-1.5 text-[10px] font-mono-data text-on-surface">
+<span>Scale</span>
+<div class="w-12 h-1 bg-on-surface inline-block"></div>
+<span>1 km</span>
+</div>
+</div>
+<!-- Zoom Controls -->
+<div class="flex flex-col bg-surface-container-lowest border border-surface-container-highest rounded shadow-xs overflow-hidden">
+<button class="w-7 h-7 flex items-center justify-center hover:bg-surface-container text-on-surface transition-colors" title="Zoom in">
+<span class="material-symbols-outlined text-[16px]">add</span>
+</button>
+<div class="h-px bg-surface-container-highest"></div>
+<button class="w-7 h-7 flex items-center justify-center hover:bg-surface-container text-on-surface transition-colors" title="Zoom out">
+<span class="material-symbols-outlined text-[16px]">remove</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- RIGHT COLUMN: Search controls summary & Exactly 3 Generic Illustrative Businesses -->
+<div class="lg:col-span-7 bg-surface flex flex-col">
+<!-- Search Parameter Summary Strip -->
+<div class="px-6 py-3.5 bg-surface-container-low border-b border-surface-container-highest flex flex-wrap items-center justify-between gap-3">
+<div class="flex items-center gap-2 min-w-0">
+<span class="material-symbols-outlined text-[18px] text-primary shrink-0">pin_drop</span>
+<div class="text-xs text-on-surface font-medium truncate">
+<span>Raffles Place, Singapore</span>
+<span class="text-outline-variant mx-1.5">•</span>
+<span>3 km radius</span>
+<span class="text-outline-variant mx-1.5">•</span>
+<span class="text-on-surface-variant">Business and professional services</span>
+</div>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<span class="text-xs font-mono-data text-on-surface-variant">3 results</span>
+<button class="bg-surface-container-lowest border border-surface-container-highest hover:bg-surface-container text-on-surface px-2.5 py-1 rounded text-xs font-medium flex items-center gap-1 transition-colors">
+<span class="material-symbols-outlined text-[14px]">tune</span>
+<span>Edit search</span>
+</button>
+</div>
+</div>
+<!-- Dossier Cards List -->
+<div class="p-6 flex flex-col gap-4 overflow-y-auto">
+<!-- ================= CARD 1: Example Business A ================= -->
+<article class="bg-surface-container-lowest border border-surface-container-highest rounded p-4 shadow-xs hover:border-outline-variant transition-colors flex flex-col gap-3 group" id="prospect-card-1" onmouseenter="highlightPin(1, true)" onmouseleave="highlightPin(1, false)">
+<div class="flex items-start justify-between gap-3">
+<div class="flex items-start gap-3 min-w-0">
+<div class="w-6 h-6 rounded bg-primary text-on-primary flex items-center justify-center font-mono-data text-xs font-bold shrink-0 mt-0.5">
+                    1
+                  </div>
+<div class="flex flex-col min-w-0">
+<h3 class="text-sm font-semibold text-on-surface tracking-tight">
+                      Example Business A
+                    </h3>
+<span class="text-xs text-on-surface-variant mt-0.5">
+                      Management Consulting &amp; Advisory
+                    </span>
+</div>
+</div>
+<!-- Proximity Tag -->
+<div class="flex items-center gap-1 bg-surface-container-low px-2 py-0.5 rounded text-xs font-mono-data text-on-surface shrink-0">
+<span class="material-symbols-outlined text-[13px] text-primary">near_me</span>
+<span>0.4 km from Raffles Place</span>
+</div>
+</div>
+<!-- Digital Presence Information Strip -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-surface-container-low/60 p-2.5 rounded text-xs">
+<div class="flex items-center gap-2 min-w-0">
+<span class="material-symbols-outlined text-[15px] text-secondary">language</span>
+<span class="text-on-surface-variant uppercase text-[10px] font-semibold tracking-wider">Website:</span>
+<span class="font-mono-data text-on-surface truncate">Listed in record</span>
+</div>
+<div class="flex items-center gap-2 min-w-0">
+<span class="material-symbols-outlined text-[15px] text-secondary">call</span>
+<span class="text-on-surface-variant uppercase text-[10px] font-semibold tracking-wider">Phone:</span>
+<span class="font-mono-data text-on-surface truncate">Listed in record</span>
+</div>
+</div>
+<!-- Footer Strip: Provenance & Actions -->
+<div class="flex flex-wrap items-center justify-between gap-3 pt-1 border-t border-surface-container-highest/60 text-xs">
+<div class="flex items-center gap-1.5 text-on-surface-variant font-mono-data text-[11px]">
+<span class="material-symbols-outlined text-[14px]">public</span>
+<span>Data source: OpenStreetMap</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="bg-surface-container hover:bg-surface-container-high text-on-surface px-3 py-1 rounded text-xs font-medium flex items-center gap-1 transition-colors" onclick="saveLead(this, 'Business A')">
+<span class="material-symbols-outlined text-[14px]">bookmark_border</span>
+<span>Save lead</span>
+</button>
+<button class="bg-primary hover:bg-primary-container text-on-primary px-3 py-1 rounded text-xs font-medium flex items-center gap-1 transition-colors">
+<span>Inspect details</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+</button>
+</div>
+</div>
+</article>
+<!-- ================= CARD 2: Example Business B ================= -->
+<article class="bg-surface-container-lowest border border-surface-container-highest rounded p-4 shadow-xs hover:border-outline-variant transition-colors flex flex-col gap-3 group" id="prospect-card-2" onmouseenter="highlightPin(2, true)" onmouseleave="highlightPin(2, false)">
+<div class="flex items-start justify-between gap-3">
+<div class="flex items-start gap-3 min-w-0">
+<div class="w-6 h-6 rounded bg-primary text-on-primary flex items-center justify-center font-mono-data text-xs font-bold shrink-0 mt-0.5">
+                    2
+                  </div>
+<div class="flex flex-col min-w-0">
+<h3 class="text-sm font-semibold text-on-surface tracking-tight">
+                      Example Business B
+                    </h3>
+<span class="text-xs text-on-surface-variant mt-0.5">
+                      Corporate Legal &amp; Compliance Services
+                    </span>
+</div>
+</div>
+<!-- Proximity Tag -->
+<div class="flex items-center gap-1 bg-surface-container-low px-2 py-0.5 rounded text-xs font-mono-data text-on-surface shrink-0">
+<span class="material-symbols-outlined text-[13px] text-primary">near_me</span>
+<span>1.1 km from Raffles Place</span>
+</div>
+</div>
+<!-- Digital Presence Information Strip -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-surface-container-low/60 p-2.5 rounded text-xs">
+<div class="flex items-center gap-2 min-w-0">
+<span class="material-symbols-outlined text-[15px] text-secondary">language</span>
+<span class="text-on-surface-variant uppercase text-[10px] font-semibold tracking-wider">Website:</span>
+<span class="font-mono-data text-on-surface truncate">Listed in record</span>
+</div>
+<div class="flex items-center gap-2 min-w-0">
+<span class="material-symbols-outlined text-[15px] text-outline">call_missed</span>
+<span class="text-on-surface-variant uppercase text-[10px] font-semibold tracking-wider">Phone:</span>
+<span class="font-mono-data text-outline italic truncate">Not cataloged in source</span>
+</div>
+</div>
+<!-- Footer Strip: Provenance & Actions -->
+<div class="flex flex-wrap items-center justify-between gap-3 pt-1 border-t border-surface-container-highest/60 text-xs">
+<div class="flex items-center gap-1.5 text-on-surface-variant font-mono-data text-[11px]">
+<span class="material-symbols-outlined text-[14px]">public</span>
+<span>Data source: OpenStreetMap</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="bg-surface-container hover:bg-surface-container-high text-on-surface px-3 py-1 rounded text-xs font-medium flex items-center gap-1 transition-colors" onclick="saveLead(this, 'Business B')">
+<span class="material-symbols-outlined text-[14px]">bookmark_border</span>
+<span>Save lead</span>
+</button>
+<button class="bg-primary hover:bg-primary-container text-on-primary px-3 py-1 rounded text-xs font-medium flex items-center gap-1 transition-colors">
+<span>Inspect details</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+</button>
+</div>
+</div>
+</article>
+<!-- ================= CARD 3: Example Business C ================= -->
+<article class="bg-surface-container-lowest border border-surface-container-highest rounded p-4 shadow-xs hover:border-outline-variant transition-colors flex flex-col gap-3 group" id="prospect-card-3" onmouseenter="highlightPin(3, true)" onmouseleave="highlightPin(3, false)">
+<div class="flex items-start justify-between gap-3">
+<div class="flex items-start gap-3 min-w-0">
+<div class="w-6 h-6 rounded bg-primary text-on-primary flex items-center justify-center font-mono-data text-xs font-bold shrink-0 mt-0.5">
+                    3
+                  </div>
+<div class="flex flex-col min-w-0">
+<h3 class="text-sm font-semibold text-on-surface tracking-tight">
+                      Example Business C
+                    </h3>
+<span class="text-xs text-on-surface-variant mt-0.5">
+                      Executive Search &amp; Staffing
+                    </span>
+</div>
+</div>
+<!-- Proximity Tag -->
+<div class="flex items-center gap-1 bg-surface-container-low px-2 py-0.5 rounded text-xs font-mono-data text-on-surface shrink-0">
+<span class="material-symbols-outlined text-[13px] text-primary">near_me</span>
+<span>2.2 km from Raffles Place</span>
+</div>
+</div>
+<!-- Digital Presence Information Strip -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-surface-container-low/60 p-2.5 rounded text-xs">
+<div class="flex items-center gap-2 min-w-0">
+<span class="material-symbols-outlined text-[15px] text-outline">link_off</span>
+<span class="text-on-surface-variant uppercase text-[10px] font-semibold tracking-wider">Website:</span>
+<span class="font-mono-data text-outline italic truncate">Not cataloged in source</span>
+</div>
+<div class="flex items-center gap-2 min-w-0">
+<span class="material-symbols-outlined text-[15px] text-secondary">call</span>
+<span class="text-on-surface-variant uppercase text-[10px] font-semibold tracking-wider">Phone:</span>
+<span class="font-mono-data text-on-surface truncate">Listed in record</span>
+</div>
+</div>
+<!-- Footer Strip: Provenance & Actions -->
+<div class="flex flex-wrap items-center justify-between gap-3 pt-1 border-t border-surface-container-highest/60 text-xs">
+<div class="flex items-center gap-1.5 text-on-surface-variant font-mono-data text-[11px]">
+<span class="material-symbols-outlined text-[14px]">public</span>
+<span>Data source: OpenStreetMap</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="bg-surface-container hover:bg-surface-container-high text-on-surface px-3 py-1 rounded text-xs font-medium flex items-center gap-1 transition-colors" onclick="saveLead(this, 'Business C')">
+<span class="material-symbols-outlined text-[14px]">bookmark_border</span>
+<span>Save lead</span>
+</button>
+<button class="bg-primary hover:bg-primary-container text-on-primary px-3 py-1 rounded text-xs font-medium flex items-center gap-1 transition-colors">
+<span>Inspect details</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+</button>
+</div>
+</div>
+</article>
+</div>
+</div>
+</div>
+</main>
+</div>
+<script>
+    function highlightPin(id, active) {
+      const pin = document.getElementById('map-pin-' + id);
+      if (!pin) return;
+      if (active) {
+        pin.classList.add('scale-125');
+      } else {
+        pin.classList.remove('scale-125');
+      }
+    }
+
+    function focusRecord(id) {
+      const card = document.getElementById('prospect-card-' + id);
+      if (card) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        card.classList.add('ring-2', 'ring-primary');
+        setTimeout(() => {
+          card.classList.remove('ring-2', 'ring-primary');
+        }, 1200);
+      }
+    }
+
+    function saveLead(btn, name) {
+      const icon = btn.querySelector('.material-symbols-outlined');
+      const label = btn.querySelector('span:last-child');
+      if (btn.dataset.saved === "true") {
+        btn.dataset.saved = "false";
+        icon.innerText = "bookmark_border";
+        label.innerText = "Save lead";
+        btn.classList.remove('bg-secondary', 'text-white');
+        btn.classList.add('bg-surface-container', 'text-on-surface');
+      } else {
+        btn.dataset.saved = "true";
+        icon.innerText = "bookmark";
+        label.innerText = "Saved";
+        btn.classList.remove('bg-surface-container', 'text-on-surface');
+        btn.classList.add('bg-secondary', 'text-white');
+      }
+    }
+  </script>
+</body></html>

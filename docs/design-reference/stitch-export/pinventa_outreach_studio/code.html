@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="web_dashboard" name="shell-type"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    @layer base {
+      html, body { margin: 0; padding: 0; }
+      body { overscroll-behavior: none; }
+      main > :first-child { margin-top: 0 !important; }
+      main > :last-child { margin-bottom: 0 !important; }
+    }
+    ::-webkit-scrollbar { display: none; }
+  </style>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface": "#F7F5F0",
+            "background": "#F7F5F0",
+            "on-surface": "#1E201E",
+            "on-surface-variant": "#5F635D",
+            "outline": "#858882",
+            "outline-variant": "#D5D3CC",
+            "surface-container-lowest": "#FFFFFF",
+            "surface-container-low": "#F0EDE6",
+            "surface-container": "#EAE7DF",
+            "surface-container-high": "#E2DFD7",
+            "surface-container-highest": "#D9D6CE",
+            "primary": "#A34832",
+            "primary-container": "#8C3B27",
+            "on-primary": "#FFFFFF",
+            "secondary": "#436653",
+            "secondary-container": "#C4ECD4",
+            "on-secondary": "#FFFFFF",
+            "on-secondary-container": "#244A37",
+            "tertiary": "#8A5A1C",
+            "error": "#BA1A1A"
+          },
+          borderRadius: {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          spacing: {
+            "space-xs": "0.25rem",
+            "space-sm": "0.5rem",
+            "space-md": "0.75rem",
+            "space-lg": "1rem",
+            "space-xl": "1.5rem",
+            "space-2xl": "2rem",
+            "margin-panel": "1rem"
+          },
+          fontFamily: {
+            "body-sm": ["Inter", "sans-serif"],
+            "body-md": ["Inter", "sans-serif"],
+            "body-lg": ["Inter", "sans-serif"],
+            "headline-sm": ["Inter", "sans-serif"],
+            "headline-md": ["Inter", "sans-serif"],
+            "headline-lg": ["Inter", "sans-serif"],
+            "headline-xl": ["Inter", "sans-serif"],
+            "label-sm": ["Inter", "sans-serif"],
+            "label-md": ["Inter", "sans-serif"],
+            "label-caps": ["Inter", "sans-serif"],
+            "mono-data": ["Space Mono", "monospace"]
+          },
+          fontSize: {
+            "label-sm": ["11px", { lineHeight: "14px", fontWeight: "500" }],
+            "label-md": ["12px", { lineHeight: "16px", fontWeight: "500" }],
+            "label-caps": ["11px", { lineHeight: "14px", letterSpacing: "0.05em", fontWeight: "600" }],
+            "mono-data": ["12px", { lineHeight: "16px", fontWeight: "400" }],
+            "body-sm": ["12px", { lineHeight: "18px", fontWeight: "400" }],
+            "body-md": ["13px", { lineHeight: "20px", fontWeight: "400" }],
+            "body-lg": ["14px", { lineHeight: "22px", fontWeight: "400" }],
+            "headline-sm": ["14px", { lineHeight: "20px", fontWeight: "600" }],
+            "headline-md": ["16px", { lineHeight: "24px", fontWeight: "600" }],
+            "headline-lg": ["20px", { lineHeight: "28px", fontWeight: "600" }],
+            "headline-xl": ["24px", { lineHeight: "32px", fontWeight: "600" }]
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-surface font-body-md text-on-surface antialiased min-h-screen">
+<!-- Left Sidebar (Desktop Shell) -->
+<aside class="fixed left-0 top-0 h-full w-[220px] bg-surface-container-low border-r border-surface-container-highest z-50 flex flex-col justify-between select-none">
+<div class="flex flex-col">
+<!-- App Brand -->
+<div class="h-14 px-margin-panel flex items-center justify-between border-b border-surface-container-highest">
+<div class="flex items-center gap-space-sm">
+<div class="w-6 h-6 rounded flex items-center justify-center bg-primary text-on-primary">
+<span class="material-symbols-outlined text-[16px]">explore</span>
+</div>
+<span class="font-headline-sm text-headline-sm tracking-tight text-on-surface">Pinventa</span>
+</div>
+<span class="font-mono-data text-mono-data text-on-surface-variant">v1.4</span>
+</div>
+<!-- Navigation Section -->
+<div class="px-space-md pt-space-md pb-space-xs">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant">Domains</span>
+</div>
+<nav class="flex flex-col px-space-xs gap-space-xs">
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">my_location</span>
+<span class="font-body-md text-body-md">Discover</span>
+</a>
+<a class="flex items-center gap-space-sm px-space-md py-space-sm rounded text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[18px]">table_chart</span>
+<span class="font-body-md text-body-md">Leads</span>
+</a>
+<a aria-current="page" class="flex items-center gap-space-sm px-space-md py-space-sm rounded transition-colors bg-surface-container-lowest text-primary font-headline-sm border-l-2 border-primary" href="#">
+<span class="material-symbols-outlined text-[18px]">drafts</span>
+<span class="font-body-md text-body-md font-semibold">Outreach</span>
+</a>
+</nav>
+</div>
+<!-- Sidebar Bottom Workspace Info -->
+<div class="flex flex-col border-t border-surface-container-highest bg-surface-container-low">
+<div class="p-space-md border-b border-surface-container-highest">
+<div class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant mt-0.5">location_on</span>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm uppercase text-on-surface-variant">Active Market</span>
+<span class="font-mono-data text-mono-data text-on-surface">Raffles Place, SG</span>
+</div>
+</div>
+</div>
+<div class="p-space-md flex items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-7 h-7 rounded bg-secondary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-secondary text-[16px]">corporate_fare</span>
+</div>
+<div class="flex flex-col truncate">
+<span class="font-label-md text-label-md text-on-surface truncate">Advisory Research</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant truncate">Workspace Team</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant shrink-0">unfold_more</span>
+</div>
+</div>
+</aside>
+<!-- Main View Area -->
+<div class="pl-[220px]">
+<!-- Top Bar -->
+<header class="fixed top-0 left-[220px] right-0 h-14 bg-surface border-b border-surface-container-highest z-40 flex items-center justify-between px-space-xl">
+<div class="flex items-center gap-space-md">
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant">Workspace</span>
+<span class="text-outline-variant font-mono-data">/</span>
+<span class="font-mono-data text-mono-data text-on-surface">Singapore Central District</span>
+</div>
+<div class="flex items-center gap-space-md">
+<div class="flex items-center gap-space-xs px-space-sm py-0.5 bg-surface-container-high rounded border border-surface-container-highest">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span class="font-label-sm text-label-sm text-on-surface font-medium">Drafting Session</span>
+</div>
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[18px]">person</span>
+</div>
+</div>
+</header>
+<!-- Main Content Container -->
+<main class="relative pt-14 w-full min-h-screen bg-surface">
+<div class="flex flex-col w-full max-w-[1360px] mx-auto">
+<!-- Top Context Header Area -->
+<div class="px-space-xl py-space-lg bg-surface flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<a class="flex items-center gap-1 text-on-surface-variant hover:text-primary transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-[16px]">arrow_back</span>
+<span>Back to Lead Detail</span>
+</a>
+<span class="text-outline-variant font-mono-data text-mono-data">/</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">Outreach Studio</span>
+<span class="text-outline-variant font-mono-data text-mono-data">/</span>
+<span class="font-mono-data text-mono-data text-on-surface font-headline-sm">Example Business A</span>
+</div>
+<div class="flex items-center gap-space-xs px-space-md py-1 bg-surface-container rounded font-mono-data text-label-sm text-on-surface-variant">
+<span>REF: SG-RP-EX-A</span>
+</div>
+</div>
+<div class="flex items-baseline justify-between mt-space-xs">
+<div>
+<h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tight">Outreach Studio</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-0.5">
+                Draft personalized outreach grounded strictly on observed business facts and workflow hypotheses.
+              </p>
+</div>
+<a class="inline-flex items-center gap-space-xs px-space-md py-1.5 rounded bg-surface-container border border-surface-container-highest text-on-surface hover:bg-surface-container-high transition-colors text-body-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[16px]">arrow_back</span>
+<span>Back to Lead Detail</span>
+</a>
+</div>
+<!-- Prominent Compliance Notice Banner -->
+<div class="mt-space-xs bg-surface-container-low border border-surface-container-highest px-space-md py-2.5 rounded flex items-center justify-between">
+<div class="flex items-center gap-space-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px] text-tertiary">info</span>
+<span class="font-body-sm text-body-sm text-on-surface">
+<strong class="font-medium text-on-surface">Illustrative draft environment:</strong> Human review required before external communication. Illustrative preview — not generated from a live business record.
+              </span>
+</div>
+<span class="font-mono-data text-label-sm text-on-surface-variant shrink-0 ml-space-md">PREVIEW MODE</span>
+</div>
+</div>
+<!-- Two-Column Layout (Left: Context & Variants | Right: Editor Canvas) -->
+<div class="px-space-xl pb-space-2xl grid grid-cols-12 gap-space-xl items-start">
+<!-- Left Column (Compact Business Context & Draft Selector) -->
+<div class="col-span-12 lg:col-span-4 flex flex-col gap-space-lg">
+<!-- Compact Business Context Panel -->
+<div class="bg-surface-container-lowest border border-surface-container-highest rounded p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between pb-space-xs border-b border-surface-container-high">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px] text-primary">fact_check</span>
+<h2 class="font-label-caps text-label-caps uppercase text-on-surface">Observed Business Context</h2>
+</div>
+<span class="font-mono-data text-label-sm text-on-surface-variant">Informing Facts</span>
+</div>
+<div class="space-y-space-sm text-body-sm">
+<div class="bg-surface-container-low p-space-md rounded flex flex-col gap-0.5">
+<span class="font-label-sm text-label-sm uppercase text-on-surface-variant">Target Lead</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">Example Business A</span>
+</div>
+<div class="bg-surface-container-low p-space-md rounded flex flex-col gap-0.5">
+<span class="font-label-sm text-label-sm uppercase text-on-surface-variant">Category</span>
+<span class="font-body-md text-body-md text-on-surface">Management Consulting &amp; Advisory</span>
+</div>
+<div class="bg-surface-container-low p-space-md rounded flex flex-col gap-0.5">
+<span class="font-label-sm text-label-sm uppercase text-on-surface-variant">Location</span>
+<span class="font-body-md text-body-md text-on-surface">Raffles Place, Singapore</span>
+</div>
+<div class="bg-surface-container p-space-md rounded flex flex-col gap-1 border border-surface-container-highest">
+<div class="flex items-center gap-space-xs text-primary">
+<span class="material-symbols-outlined text-[15px]">lightbulb</span>
+<span class="font-label-caps text-label-caps uppercase text-primary">Opportunity Hypothesis</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface font-medium leading-relaxed">
+                    Proposal workflow optimization and reducing manual triage overhead during client intake.
+                  </p>
+</div>
+</div>
+</div>
+<!-- Draft Selector Panel -->
+<div class="bg-surface-container-lowest border border-surface-container-highest rounded p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between pb-space-xs border-b border-surface-container-high">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[16px] text-on-surface">layers</span>
+<h2 class="font-label-caps text-label-caps uppercase text-on-surface">Draft Selector</h2>
+</div>
+<span class="font-mono-data text-label-sm text-on-surface-variant">3 Variants</span>
+</div>
+<!-- Variants List -->
+<div class="flex flex-col gap-space-sm" id="draft-selector">
+<!-- Draft A (Selected) -->
+<button class="w-full text-left bg-surface-container-high border border-outline-variant p-space-md rounded flex flex-col gap-1 transition-all" onclick="selectDraft('A', this)" type="button">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-headline-sm text-headline-sm text-on-surface">Draft A</span>
+</div>
+<span class="font-label-sm text-label-sm px-2 py-0.5 bg-secondary-container text-on-secondary-container rounded font-medium">Ready for Review</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface font-medium mt-0.5">Operational Efficiency Focus</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Standardizing proposal documentation &amp; inquiry triage overhead.</p>
+</button>
+<!-- Draft B -->
+<button class="w-full text-left bg-surface-container-low border border-transparent hover:bg-surface-container p-space-md rounded flex flex-col gap-1 transition-all" onclick="selectDraft('B', this)" type="button">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="w-2 h-2 rounded-full bg-surface-container-highest"></span>
+<span class="font-headline-sm text-headline-sm text-on-surface">Draft B</span>
+</div>
+<span class="font-label-sm text-label-sm px-2 py-0.5 bg-surface-container-highest text-on-surface-variant rounded">Draft</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface font-medium mt-0.5">Regional Advisory Workflow</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Cross-border consulting project scoping in the financial core.</p>
+</button>
+<!-- Draft C -->
+<button class="w-full text-left bg-surface-container-low border border-transparent hover:bg-surface-container p-space-md rounded flex flex-col gap-1 transition-all" onclick="selectDraft('C', this)" type="button">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="w-2 h-2 rounded-full bg-surface-container-highest"></span>
+<span class="font-headline-sm text-headline-sm text-on-surface">Draft C</span>
+</div>
+<span class="font-label-sm text-label-sm px-2 py-0.5 bg-surface-container-highest text-on-surface-variant rounded">Draft</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface font-medium mt-0.5">Rapid Client Intake</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Fast response turnaround for corporate client qualification.</p>
+</button>
+</div>
+</div>
+</div>
+<!-- Right Column: Editor Workspace -->
+<div class="col-span-12 lg:col-span-8 flex flex-col gap-space-lg">
+<div class="bg-surface-container-lowest border border-surface-container-highest rounded p-space-xl shadow-sm flex flex-col gap-space-lg relative">
+<!-- Header inside Editor with Status Indicator -->
+<div class="flex items-center justify-between pb-space-md border-b border-surface-container-high">
+<div class="flex flex-col gap-0.5">
+<div class="flex items-center gap-space-sm">
+<span class="font-headline-md text-headline-md text-on-surface" id="active-draft-title">Draft A — Operational Efficiency Focus</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                    Tailored strictly to management consulting context in Raffles Place, Singapore.
+                  </p>
+</div>
+<!-- Status indicator: Ready for Human Review -->
+<div class="flex items-center gap-space-xs bg-secondary-container px-space-md py-1 rounded text-on-secondary-container shrink-0 border border-secondary/20">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span class="font-label-sm text-label-sm font-semibold uppercase tracking-wider" id="status-badge">Ready for Human Review</span>
+</div>
+</div>
+<!-- Recipient Notice & Field -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-start justify-between gap-space-sm">
+<label class="font-label-caps text-label-caps uppercase text-on-surface-variant">Recipient Target</label>
+<span class="text-label-sm text-on-surface-variant flex items-center gap-1 text-right">
+<span class="material-symbols-outlined text-[14px] text-tertiary">info</span>
+<span>Recipient email address and specific decision-maker are not cataloged. Do not imply email has been sent.</span>
+</span>
+</div>
+<div class="flex items-center gap-space-sm bg-surface-container-low px-space-md py-2.5 rounded border border-surface-container-high font-mono-data text-body-md text-on-surface">
+<span class="text-on-surface-variant select-none">To:</span>
+<span class="bg-surface-container px-2 py-0.5 rounded text-on-surface font-mono-data text-body-sm">[Operations / Managing Partner at Example Business A]</span>
+<span class="text-on-surface-variant text-label-sm font-sans ml-auto">Role placeholder</span>
+</div>
+</div>
+<!-- Subject Line (Editable Field) -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<label class="font-label-caps text-label-caps uppercase text-on-surface-variant" for="subject-input">Subject Line</label>
+<span class="font-mono-data text-label-sm text-on-surface-variant" id="subject-count">77 chars</span>
+</div>
+<input class="w-full bg-surface-container-low border border-surface-container-high px-space-md py-2.5 rounded font-headline-sm text-headline-sm text-on-surface focus:outline-none focus:border-primary focus:bg-surface-container-lowest transition-colors" id="subject-input" oninput="updateCharCount(this)" type="text" value="Inquiry regarding client intake and advisory workflow at Example Business A"/>
+</div>
+<!-- Email Body (Editable Text Area) -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<label class="font-label-caps text-label-caps uppercase text-on-surface-variant" for="body-editor">Email Body</label>
+<div class="flex items-center gap-space-md font-mono-data text-label-sm text-on-surface-variant">
+<span id="word-count">73 words</span>
+</div>
+</div>
+<textarea class="w-full bg-surface-container-low border border-surface-container-high p-space-lg rounded font-body-lg text-body-lg text-on-surface leading-relaxed resize-y focus:outline-none focus:border-primary focus:bg-surface-container-lowest transition-colors font-sans" id="body-editor" oninput="updateWordCount(this)" rows="11">Hello Team at Example Business A,
+
+I noticed your advisory practice based in the Raffles Place area. Many consulting and professional services firms in the district spend considerable time triaging client intake inquiries and standardizing proposal documentation.
+
+We help professional advisory teams streamline their initial intake workflows so senior consultants can focus on client delivery.
+
+Would you be open to a brief 10-minute introductory conversation next week to see how this compares to your current workflow?
+
+Best regards,
+[Your Name]</textarea>
+</div>
+<!-- Action Bar -->
+<div class="pt-space-md border-t border-surface-container-high flex flex-wrap items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-sm flex-wrap">
+<!-- Restrained Terracotta CTA Button -->
+<button class="bg-primary hover:bg-primary-container text-on-primary font-headline-sm text-headline-sm px-space-lg py-2 rounded flex items-center gap-space-sm shadow-sm transition-all active:scale-[0.98]" id="copy-btn" onclick="copyDraft()" type="button">
+<span class="material-symbols-outlined text-[18px]" id="copy-icon">content_copy</span>
+<span id="copy-text">Copy to Clipboard</span>
+</button>
+<!-- Regenerate Draft -->
+<button class="bg-surface hover:bg-surface-container border border-surface-container-highest text-on-surface font-headline-sm text-headline-sm px-space-md py-2 rounded flex items-center gap-space-sm transition-colors" onclick="cycleVariant()" type="button">
+<span class="material-symbols-outlined text-[18px]">autorenew</span>
+<span>Regenerate Draft</span>
+</button>
+<!-- Save Revisions -->
+<button class="bg-surface hover:bg-surface-container border border-surface-container-highest text-on-surface font-headline-sm text-headline-sm px-space-md py-2 rounded flex items-center gap-space-sm transition-colors" onclick="showNotification('Revisions saved to local ledger.')" type="button">
+<span class="material-symbols-outlined text-[18px]">save</span>
+<span>Save Revisions</span>
+</button>
+</div>
+<!-- Navigation Back Link -->
+<a class="flex items-center gap-1 text-on-surface-variant hover:text-primary transition-colors text-body-sm font-medium" href="#">
+<span class="material-symbols-outlined text-[16px]">arrow_back</span>
+<span>Back to Lead Detail</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Toast Feedback -->
+<div class="fixed bottom-space-xl right-space-xl bg-[#2A2C29] text-surface px-space-lg py-space-sm rounded shadow-lg flex items-center gap-space-sm transform translate-y-24 opacity-0 transition-all duration-300 z-50 font-body-md" id="toast">
+<span class="material-symbols-outlined text-[18px] text-secondary-container">check_circle</span>
+<span id="toast-text">Draft copied to clipboard</span>
+</div>
+</main>
+</div>
+<script>
+    const draftsData = {
+      'A': {
+        title: 'Draft A — Operational Efficiency Focus',
+        status: 'Ready for Human Review',
+        subject: 'Inquiry regarding client intake and advisory workflow at Example Business A',
+        body: `Hello Team at Example Business A,\n\nI noticed your advisory practice based in the Raffles Place area. Many consulting and professional services firms in the district spend considerable time triaging client intake inquiries and standardizing proposal documentation.\n\nWe help professional advisory teams streamline their initial intake workflows so senior consultants can focus on client delivery.\n\nWould you be open to a brief 10-minute introductory conversation next week to see how this compares to your current workflow?\n\nBest regards,\n[Your Name]`
+      },
+      'B': {
+        title: 'Draft B — Regional Advisory Workflow',
+        status: 'Draft',
+        subject: 'Workflow alignment for advisory engagements at Example Business A',
+        body: `Hello Team at Example Business A,\n\nFollowing your advisory practice in Raffles Place, we frequently speak with Singapore consulting teams managing multi-jurisdiction client projects.\n\nA recurring operational friction is the transition between preliminary scope agreement and finalized client onboarding documentation.\n\nWe support regional practices in streamlining these initial handoffs so advisory directors spend less time orchestrating templates and more time with stakeholders.\n\nCould we arrange a short 10-minute introduction next week to share relevant peer benchmarks?\n\nBest regards,\n[Your Name]`
+      },
+      'C': {
+        title: 'Draft C — Rapid Client Intake',
+        status: 'Draft',
+        subject: 'Optimizing prospective client intake turnaround at Example Business A',
+        body: `Hello Team at Example Business A,\n\nI am contacting your team regarding prospective client qualification and initial engagement drafting.\n\nIn competitive advisory segments across Singapore, rapid initial scoping often determines whether high-value accounts proceed to formal mandates.\n\nWe assist professional practices in accelerating client intake and proposal staging without adding administrative burden to delivery partners.\n\nAre you open to a brief 10-minute conversation this Thursday to review our workflow approach?\n\nBest regards,\n[Your Name]`
+      }
+    };
+
+    let currentDraftKey = 'A';
+
+    function selectDraft(key, btnElement) {
+      currentDraftKey = key;
+      const data = draftsData[key];
+      if (!data) return;
+
+      document.getElementById('active-draft-title').innerText = data.title;
+      document.getElementById('subject-input').value = data.subject;
+      document.getElementById('body-editor').value = data.body;
+      document.getElementById('status-badge').innerText = data.status === 'Ready for Human Review' ? 'Ready for Human Review' : 'Draft Variant';
+
+      updateCharCount(document.getElementById('subject-input'));
+      updateWordCount(document.getElementById('body-editor'));
+
+      const container = document.getElementById('draft-selector');
+      const buttons = container.querySelectorAll('button');
+      buttons.forEach(b => {
+        b.className = 'w-full text-left bg-surface-container-low border border-transparent hover:bg-surface-container p-space-md rounded flex flex-col gap-1 transition-all';
+        const dot = b.querySelector('.rounded-full');
+        if (dot) dot.className = 'w-2 h-2 rounded-full bg-surface-container-highest';
+      });
+
+      btnElement.className = 'w-full text-left bg-surface-container-high border border-outline-variant p-space-md rounded flex flex-col gap-1 transition-all';
+      const dot = btnElement.querySelector('.rounded-full');
+      if (dot) dot.className = 'w-2 h-2 rounded-full bg-primary';
+
+      showNotification('Switched to ' + data.title);
+    }
+
+    function cycleVariant() {
+      const keys = ['A', 'B', 'C'];
+      const nextIndex = (keys.indexOf(currentDraftKey) + 1) % keys.length;
+      const nextKey = keys[nextIndex];
+
+      const container = document.getElementById('draft-selector');
+      const buttons = container.querySelectorAll('button');
+      selectDraft(nextKey, buttons[nextIndex]);
+    }
+
+    function updateCharCount(el) {
+      document.getElementById('subject-count').innerText = el.value.length + ' chars';
+    }
+
+    function updateWordCount(el) {
+      const words = el.value.trim().split(/\s+/).filter(Boolean).length;
+      document.getElementById('word-count').innerText = words + ' words';
+    }
+
+    function copyDraft() {
+      const subject = document.getElementById('subject-input').value;
+      const body = document.getElementById('body-editor').value;
+      const fullText = `Subject: ${subject}\n\n${body}`;
+
+      navigator.clipboard.writeText(fullText).then(() => {
+        const copyIcon = document.getElementById('copy-icon');
+        const copyText = document.getElementById('copy-text');
+        copyIcon.innerText = 'done';
+        copyText.innerText = 'Copied to Clipboard!';
+
+        showNotification('Email draft copied to clipboard.');
+
+        setTimeout(() => {
+          copyIcon.innerText = 'content_copy';
+          copyText.innerText = 'Copy to Clipboard';
+        }, 2500);
+      });
+    }
+
+    function showNotification(msg) {
+      const toast = document.getElementById('toast');
+      const toastText = document.getElementById('toast-text');
+      toastText.innerText = msg;
+      toast.classList.remove('translate-y-24', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-24', 'opacity-0');
+      }, 2800);
+    }
+  </script>
+</body></html>
