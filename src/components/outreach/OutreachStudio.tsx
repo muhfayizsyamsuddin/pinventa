@@ -36,6 +36,51 @@ export function OutreachStudio({ lead, drafts: initial }: OutreachStudioProps) {
     return initial[0]?.id ?? "";
   });
   const [message, setMessage] = useState<string>("");
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<string | null>(null);
+
+  const isCustomSynced = drafts.some(
+    (d) =>
+      d.id.includes("n8n") ||
+      d.id.includes("gsheet") ||
+      d.summary?.toLowerCase().includes("n8n") ||
+      d.summary?.toLowerCase().includes("google sheets"),
+  );
+
+  async function handleSyncDrafts(manual = true) {
+    if (isSyncing) return;
+    setIsSyncing(true);
+    setSyncStatus(null);
+    try {
+      const res = await fetch(
+        `/api/outreach/drafts?company=${encodeURIComponent(lead.name)}&leadId=${encodeURIComponent(lead.id)}`,
+      );
+      const data = await res.json();
+      if (res.ok && data.success && Array.isArray(data.drafts) && data.drafts.length > 0) {
+        setDrafts(data.drafts);
+        setActiveId(data.drafts[0].id);
+        saveDraftsForLead(lead.id, data.drafts);
+        setMessage(
+          `Loaded ${data.drafts.length} drafts from ${data.source === "google_sheets" ? "Google Sheets" : "n8n"}.`,
+        );
+      } else if (manual) {
+        setSyncStatus(data.error || "No drafts found in database.");
+      }
+    } catch (err: unknown) {
+      if (manual) {
+        setSyncStatus(err instanceof Error ? err.message : "Failed to sync drafts.");
+      }
+    } finally {
+      setIsSyncing(false);
+    }
+  }
+
+  // Auto-sync on mount if current drafts are only generic rule-based templates
+  useEffect(() => {
+    if (!isCustomSynced && lead.dataOrigin === "live") {
+      handleSyncDrafts(false);
+    }
+  }, [lead.id, isCustomSynced]);
 
   // Listen for storage changes from other tabs or store updates
   useEffect(() => {
@@ -184,11 +229,38 @@ export function OutreachStudio({ lead, drafts: initial }: OutreachStudioProps) {
           icon="layers"
           meta={`${drafts.length} variants`}
         >
-          {isLive && (
-            <div className="border-b border-line bg-stone/70 px-4 py-2 text-[11px] text-ink-2">
-              <span className="font-semibold text-ink">Rule-based templates:</span> Drafts
-              grounded in observed map records. AI generation (Criterion 7) scheduled for
-              Milestone 3.
+          {isCustomSynced ? (
+            <div className="flex items-center justify-between border-b border-line bg-sage/10 px-4 py-2 text-[11px] text-sage">
+              <span className="flex items-center gap-1.5 font-medium">
+                <span className="h-1.5 w-1.5 rounded-full bg-sage" />
+                Synced with database
+              </span>
+              <button
+                type="button"
+                onClick={() => handleSyncDrafts(true)}
+                disabled={isSyncing}
+                className="text-[11px] font-semibold text-primary underline-offset-2 hover:underline disabled:opacity-50"
+              >
+                {isSyncing ? "Syncing…" : "Re-sync"}
+              </button>
+            </div>
+          ) : isLive ? (
+            <div className="flex items-center justify-between border-b border-line bg-stone/70 px-4 py-2 text-[11px] text-ink-2">
+              <span>Rule-based templates</span>
+              <button
+                type="button"
+                onClick={() => handleSyncDrafts(true)}
+                disabled={isSyncing}
+                className="font-medium text-primary underline-offset-2 hover:underline disabled:opacity-50"
+              >
+                {isSyncing ? "Syncing…" : "Fetch from Google Sheets"}
+              </button>
+            </div>
+          ) : null}
+
+          {syncStatus && (
+            <div className="border-b border-line bg-amber/10 px-4 py-1.5 text-[11px] text-amber">
+              {syncStatus}
             </div>
           )}
           <DraftList

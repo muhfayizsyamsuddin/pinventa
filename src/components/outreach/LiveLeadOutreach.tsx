@@ -1,6 +1,5 @@
 "use client";
 
-import { useMemo } from "react";
 import Link from "next/link";
 import { OutreachStudio } from "@/components/outreach/OutreachStudio";
 import { ButtonLink } from "@/components/ui/Button";
@@ -8,30 +7,11 @@ import { Icon } from "@/components/ui/Icon";
 import { PageHeader, StateMessage } from "@/components/ui/Panel";
 import { LeadStatusBadge, ProvenanceBadge } from "@/components/ui/StatusBadge";
 import { useLeadStore } from "@/context/LeadStoreContext";
-import { getLastScoredLeadId } from "@/lib/lead-store";
 import { getOrInitDraftsForLead } from "@/lib/outreach-generator";
 
-export function LiveLeadOutreach({ leadId }: { leadId?: string }) {
-  const { leads, getLeadById, isHydrated } = useLeadStore();
-
-  const targetLeadId = useMemo(() => {
-    if (leadId) return leadId;
-    // 1. Check last scored lead recorded in localStorage
-    const lastScored = getLastScoredLeadId();
-    if (lastScored && leads.some((l) => l.id === lastScored)) {
-      return lastScored;
-    }
-    // 2. Check lead with newest scoredAt timestamp
-    const scored = [...leads].filter((l) => l.scoredAt);
-    if (scored.length > 0) {
-      scored.sort((a, b) => new Date(b.scoredAt!).getTime() - new Date(a.scoredAt!).getTime());
-      return scored[0].id;
-    }
-    // 3. Fallback to newest saved lead
-    return leads[0]?.id ?? null;
-  }, [leadId, leads]);
-
-  const lead = targetLeadId ? getLeadById(targetLeadId) : undefined;
+export function LiveLeadOutreach({ leadId }: { leadId: string }) {
+  const { getLeadById, isHydrated } = useLeadStore();
+  const lead = getLeadById(leadId);
 
   if (!isHydrated) {
     return (
@@ -55,29 +35,20 @@ export function LiveLeadOutreach({ leadId }: { leadId?: string }) {
         <div className="rounded-lg border border-line bg-card p-6">
           <StateMessage
             icon="mail"
-            title="No scored leads found"
+            title="Live lead not found"
             action={
               <div className="flex gap-2">
-                <ButtonLink href="/leads" variant="primary" className="text-[12px]">
-                  Go to Leads
+                <ButtonLink href="/leads" variant="secondary" className="text-[12px]">
+                  View saved leads
                 </ButtonLink>
-                <ButtonLink href="/discover" variant="secondary" className="text-[12px]">
+                <ButtonLink href="/discover" variant="primary" className="text-[12px]">
                   Go to Discover
                 </ButtonLink>
               </div>
             }
           >
-            {leadId ? (
-              <>
-                The lead with ID <span className="font-mono text-ink">{leadId}</span> was not found in saved
-                leads storage.
-              </>
-            ) : (
-              <>
-                No lead has been scored yet. Go to the Leads page and click &quot;Score&quot; on any business to
-                generate AI qualification and custom outreach drafts.
-              </>
-            )}
+            The lead with ID <span className="font-mono text-ink">{leadId}</span> was not found in saved
+            leads storage. It may have been removed or saved in a different browser session.
           </StateMessage>
         </div>
       </div>

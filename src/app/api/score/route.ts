@@ -25,6 +25,8 @@ export async function POST(request: Request) {
       const n8nTrigger = await triggerN8NWorkflow({
         event: "score_lead",
         timestamp: new Date().toISOString(),
+        language: "en",
+        instructions: "Generate all outreach email draft variants strictly in professional English for B2B enterprises.",
         lead: {
           id: lead.id,
           refId: lead.refId,
@@ -58,6 +60,8 @@ export async function POST(request: Request) {
     const n8nTrigger = await triggerN8NWorkflow({
       event: "score_lead",
       timestamp: new Date().toISOString(),
+      language: "en",
+      instructions: "Generate all outreach email draft variants strictly in professional English for B2B enterprises.",
       lead: {
         id: lead.id,
         refId: lead.refId,

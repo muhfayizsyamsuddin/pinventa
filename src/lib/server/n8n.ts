@@ -1,8 +1,11 @@
 import type { Lead, OpportunityHypothesis, OutreachDraft, ScoreComponent } from "@/types/pinventa";
+import { parseDraftSubjectAndBody } from "@/lib/server/google-sheets";
 
 export interface N8NTriggerPayload {
   event: "score_lead";
   timestamp: string;
+  language: "en";
+  instructions: string;
   lead: {
     id: string;
     refId: string;
@@ -93,21 +96,60 @@ export async function triggerN8NWorkflow(payload: N8NTriggerPayload): Promise<N8
 
     console.info(`[n8n] Workflow successfully triggered at: ${webhookUrl}`);
 
-    // If n8n workflow returned custom B2B suggestions or hypotheses, extract them
+    // Unpack resData: handles strings, double-stringified JSON, arrays [ {...} ], and objects
+    let parsed: any = resData;
+    for (let i = 0; i < 3 && typeof parsed === "string"; i++) {
+      try {
+        const trimmed = parsed.trim();
+        if ((trimmed.startsWith("{") && trimmed.endsWith("}")) || (trimmed.startsWith("[") && trimmed.endsWith("]"))) {
+          parsed = JSON.parse(trimmed);
+        } else {
+          break;
+        }
+      } catch {
+        break;
+      }
+    }
+
+    // If n8n wrapped response in an item array [ { drafts: [...] } ], unwrap first item
+    if (Array.isArray(parsed) && parsed.length === 1 && parsed[0] && typeof parsed[0] === "object") {
+      const first = parsed[0];
+      if (
+        "drafts" in first ||
+        "emailDrafts" in first ||
+        "hypotheses" in first ||
+        "data" in first ||
+        "Email Draft 1 (Direct)" in first
+      ) {
+        parsed = first;
+      }
+    }
+
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+      if (parsed.data && typeof parsed.data === "object") parsed = parsed.data;
+      else if (parsed.body && typeof parsed.body === "object") parsed = parsed.body;
+    }
+
+    // 1. Extract potential opportunity hypotheses from n8n
     let customHypotheses: OpportunityHypothesis[] | undefined;
-    if (resData && typeof resData === "object") {
-      const rawList = Array.isArray(resData)
-        ? resData
-        : Array.isArray(resData.hypotheses)
-        ? resData.hypotheses
-        : Array.isArray(resData.b2bSuggestions)
-        ? resData.b2bSuggestions
-        : Array.isArray(resData.recommendations)
-        ? resData.recommendations
+    if (parsed && typeof parsed === "object") {
+      const rawHypList = Array.isArray(parsed)
+        ? parsed
+        : Array.isArray(parsed.hypotheses)
+        ? parsed.hypotheses
+        : Array.isArray(parsed.b2bSuggestions)
+        ? parsed.b2bSuggestions
+        : Array.isArray(parsed.recommendations)
+        ? parsed.recommendations
         : null;
 
-      if (rawList && rawList.length > 0) {
-        customHypotheses = (rawList as Array<Record<string, unknown>>).map((item, idx) => ({
+      if (
+        rawHypList &&
+        rawHypList.length > 0 &&
+        typeof rawHypList[0] === "object" &&
+        !("body" in rawHypList[0] && "subject" in rawHypList[0])
+      ) {
+        customHypotheses = (rawHypList as Array<Record<string, unknown>>).map((item, idx) => ({
           id: String(item.id || `n8n-hyp-${idx + 1}`),
           kindLabel: String(item.kindLabel || "n8n Opportunity"),
           title: String(item.title || item.name || "B2B Suggestion"),
@@ -116,26 +158,74 @@ export async function triggerN8NWorkflow(payload: N8NTriggerPayload): Promise<N8
         }));
       }
 
-      // If n8n workflow returned outreach email drafts, extract and normalize them
+      // 2. Extract outreach email drafts from n8n
       let drafts: OutreachDraft[] | undefined;
-      const rawDrafts = Array.isArray(resData.drafts)
-        ? resData.drafts
-        : Array.isArray(resData.emailDrafts)
-        ? resData.emailDrafts
-        : null;
+      let rawDrafts: unknown[] | null = null;
+
+      if (Array.isArray(parsed)) {
+        if (
+          parsed.length > 0 &&
+          typeof parsed[0] === "object" &&
+          parsed[0] !== null &&
+          ("body" in parsed[0] || "subject" in parsed[0] || "title" in parsed[0])
+        ) {
+          rawDrafts = parsed;
+        }
+      } else {
+        const cand =
+          parsed.drafts ||
+          parsed.emailDrafts ||
+          parsed.email_drafts ||
+          parsed.variants ||
+          parsed.outreachDrafts;
+
+        if (Array.isArray(cand)) {
+          rawDrafts = cand;
+        } else if (typeof cand === "string") {
+          try {
+            const parsedCand = JSON.parse(cand);
+            if (Array.isArray(parsedCand)) rawDrafts = parsedCand;
+          } catch {}
+        }
+
+        // Also support raw Google Sheets row output from n8n (Email Draft 1, 2, 3 columns)
+        if (!rawDrafts) {
+          const d1 = parsed["Email Draft 1 (Direct)"] || parsed["Email Draft 1"] || parsed["email_draft_1"];
+          const d2 = parsed["Email Draft 2 (Consultative)"] || parsed["Email Draft 2"] || parsed["email_draft_2"];
+          const d3 = parsed["Email Draft 3"] || parsed["Email Draft 3 (Partnership)"] || parsed["email_draft_3"];
+
+          if (d1 || d2 || d3) {
+            rawDrafts = [
+              d1 ? { title: "Draft 1 — Direct Approach", body: d1 } : null,
+              d2 ? { title: "Draft 2 — Consultative", body: d2 } : null,
+              d3 ? { title: "Draft 3 — Solusi AI & Otomasi", body: d3 } : null,
+            ].filter(Boolean);
+          }
+        }
+      }
 
       if (rawDrafts && rawDrafts.length > 0) {
-        drafts = (rawDrafts as Array<Record<string, unknown>>).map((d, idx) => ({
-          id: String(d.id || `${payload.lead.id}-n8n-draft-${idx + 1}`),
-          leadId: payload.lead.id,
-          title: String(d.title || `Draft ${idx + 1}`),
-          summary: String(d.summary || `Draft variant ${idx + 1} generated by n8n`),
-          subject: String(d.subject || `Outreach to ${payload.lead.name}`),
-          body: String(d.body || ""),
-          status: "draft",
-          dataOrigin: "live",
-        }));
+        drafts = (rawDrafts as Array<Record<string, unknown>>).map((d, idx) => {
+          const rawBody = String(d.body || d.content || d.text || "");
+          const defaultSubject = String(d.subject || d.headline || `Outreach to ${payload.lead.name}`);
+          const { subject, body } = parseDraftSubjectAndBody(rawBody, defaultSubject);
+
+          return {
+            id: String(d.id || `${payload.lead.id}-n8n-draft-${idx + 1}`),
+            leadId: payload.lead.id,
+            title: String(d.title || d.name || `Draft ${idx + 1}`),
+            summary: String(d.summary || d.description || `Generated by n8n workflow`),
+            subject,
+            body: body || rawBody,
+            status: "draft" as const,
+            dataOrigin: "live" as const,
+          };
+        });
       }
+
+      console.info(
+        `[n8n] Successfully processed: extracted ${drafts?.length ?? 0} drafts, ${customHypotheses?.length ?? 0} hypotheses.`,
+      );
 
       return {
         triggered: true,
@@ -170,5 +260,70 @@ export async function triggerN8NWorkflow(payload: N8NTriggerPayload): Promise<N8
     };
   } finally {
     clearTimeout(timeoutId);
+  }
+}
+
+/**
+ * Fetch previously saved drafts from n8n / Google Sheets for a specific company.
+ */
+export async function fetchDraftsFromN8N(
+  companyName: string,
+  leadId: string,
+): Promise<{ success: boolean; drafts?: OutreachDraft[]; error?: string }> {
+  const webhookUrl =
+    process.env.N8N_FETCH_DRAFTS_WEBHOOK_URL?.trim() ||
+    process.env.N8N_WEBHOOK_URL?.trim();
+
+  if (!webhookUrl) {
+    return { success: false, error: "n8n webhook URL not configured." };
+  }
+
+  try {
+    const res = await fetch(webhookUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "User-Agent": "Pinventa-Outreach-Fetch/1.0",
+      },
+      body: JSON.stringify({
+        event: "get_drafts",
+        companyName,
+        leadId,
+        timestamp: new Date().toISOString(),
+      }),
+      signal: AbortSignal.timeout(10000),
+    });
+
+    if (!res.ok) {
+      return { success: false, error: `n8n returned status ${res.status}` };
+    }
+
+    const data = await res.json().catch(() => null);
+    if (!data) return { success: false, error: "Empty response from n8n" };
+
+    let rawDrafts: unknown[] | null = null;
+    if (Array.isArray(data.drafts)) {
+      rawDrafts = data.drafts;
+    } else if (Array.isArray(data)) {
+      rawDrafts = data[0]?.drafts || data;
+    }
+
+    if (rawDrafts && rawDrafts.length > 0) {
+      const drafts: OutreachDraft[] = (rawDrafts as Array<Record<string, unknown>>).map((d, idx) => ({
+        id: String(d.id || `${leadId}-n8n-draft-${idx + 1}`),
+        leadId,
+        title: String(d.title || `Draft ${idx + 1}`),
+        summary: String(d.summary || `Synced via n8n`),
+        subject: String(d.subject || `Outreach to ${companyName}`),
+        body: String(d.body || ""),
+        status: "draft",
+        dataOrigin: "live",
+      }));
+      return { success: true, drafts };
+    }
+
+    return { success: false, error: "No drafts found in n8n response." };
+  } catch (err: unknown) {
+    return { success: false, error: err instanceof Error ? err.message : String(err) };
   }
 }

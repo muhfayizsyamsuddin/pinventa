@@ -24,13 +24,14 @@ export function setLastScoredLeadId(leadId: string): void {
   if (typeof window === "undefined") return;
   try {
     localStorage.setItem(LAST_SCORED_LEAD_KEY, leadId);
+    localStorage.setItem("pinventa:lastScoredLeadId", leadId);
   } catch {}
 }
 
 export function getLastScoredLeadId(): string | null {
   if (typeof window === "undefined") return null;
   try {
-    return localStorage.getItem(LAST_SCORED_LEAD_KEY);
+    return localStorage.getItem(LAST_SCORED_LEAD_KEY) || localStorage.getItem("pinventa:lastScoredLeadId");
   } catch {
     return null;
   }
@@ -457,3 +458,5 @@ if (typeof window !== "undefined") {
     }
   });
 }
+
+
