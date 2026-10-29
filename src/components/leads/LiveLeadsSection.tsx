@@ -10,7 +10,8 @@ import { LeadScore } from "@/components/ui/LeadScore";
 import { StateMessage } from "@/components/ui/Panel";
 import { LeadStatusBadge, ProvenanceBadge } from "@/components/ui/StatusBadge";
 import { useLeadStore } from "@/context/LeadStoreContext";
-import { evaluateLeadReviewReadiness } from "@/lib/lead-store";
+import { evaluateLeadReviewReadiness, setLastScoredLeadId } from "@/lib/lead-store";
+import { saveDraftsForLead } from "@/lib/outreach-generator";
 import { priorityBand, totalScore } from "@/lib/scoring";
 import {
   LEAD_STATUS_OPTIONS,
@@ -99,6 +100,10 @@ export function LiveLeadsSection() {
         scoringProvider: data.scoringProvider,
         hypotheses: data.hypotheses && data.hypotheses.length > 0 ? data.hypotheses : lead.hypotheses,
       });
+      setLastScoredLeadId(lead.id);
+      if (data.drafts && Array.isArray(data.drafts) && data.drafts.length > 0) {
+        saveDraftsForLead(lead.id, data.drafts);
+      }
     } catch (err: unknown) {
       setRowError({
         id: lead.id,

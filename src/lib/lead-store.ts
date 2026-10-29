@@ -18,6 +18,23 @@ import type {
 } from "@/types/pinventa";
 
 export const LEAD_STORE_KEY = "pinventa:saved_leads_v1";
+export const LAST_SCORED_LEAD_KEY = "pinventa:last_scored_lead_id";
+
+export function setLastScoredLeadId(leadId: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(LAST_SCORED_LEAD_KEY, leadId);
+  } catch {}
+}
+
+export function getLastScoredLeadId(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    return localStorage.getItem(LAST_SCORED_LEAD_KEY);
+  } catch {
+    return null;
+  }
+}
 
 /** Derive a short, human-readable reference ID from an OSM business id. */
 function osmRefId(osmId: string): string {

@@ -11,7 +11,8 @@ import { Icon } from "@/components/ui/Icon";
 import { Panel, StateMessage } from "@/components/ui/Panel";
 import { LeadStatusBadge, ProvenanceBadge } from "@/components/ui/StatusBadge";
 import { useLeadStore } from "@/context/LeadStoreContext";
-import { evaluateLeadReviewReadiness } from "@/lib/lead-store";
+import { evaluateLeadReviewReadiness, setLastScoredLeadId } from "@/lib/lead-store";
+import { saveDraftsForLead } from "@/lib/outreach-generator";
 import {
   canTransitionLeadStatus,
   getLeadStatusLabel,
@@ -120,6 +121,25 @@ export function LiveLeadDetail({ id }: { id: string }) {
         scoringProvider: data.scoringProvider,
         hypotheses: data.hypotheses && data.hypotheses.length > 0 ? data.hypotheses : lead.hypotheses,
       });
+
+      setLastScoredLeadId(lead.id);
+
+      if (data.drafts && Array.isArray(data.drafts) && data.drafts.length > 0) {
+        saveDraftsForLead(lead.id, data.drafts);
+      }
+
+      if (data.n8n?.triggered) {
+        const count = data.drafts?.length ?? 0;
+        setStatusMessage(
+          count > 0
+            ? `Score generated & ${count} outreach drafts created via n8n.`
+            : "Score generated and n8n workflow triggered successfully."
+        );
+      } else if (data.n8n?.error && !data.n8n?.error.includes("not configured")) {
+        setStatusMessage(`Score generated (n8n notice: ${data.n8n.error})`);
+      } else {
+        setStatusMessage("Lead scored successfully.");
+      }
     } catch (err: unknown) {
       setScoringError(err instanceof Error ? err.message : "Network error during scoring.");
     } finally {
